@@ -1,3 +1,11 @@
+/**
+ * @module     Client Backend
+ * @author     Chathura Bhashitha <chathurabhashitha01@gmail.com>
+ * @description This file is part of the Client Backend of FleetGuard AI.
+ *              All logic in this file satisfies the Client Portal dependencies.
+ * @date       2026-02-14
+ */
+
 const pool = require('../config/database');
 const path = require('path');
 const fs = require('fs');
@@ -140,7 +148,7 @@ exports.complete = async (req, res, next) => {
 exports.triggerAI = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const aiUrl = process.env.AI_SERVICE_URL || 'http://localhost:5000';
+    const aiUrl = process.env.AI_SERVICE_URL || 'http://localhost:5001';
     const aiTimeout = parseInt(process.env.AI_TIMEOUT, 10) || 60000;
 
     const photosResult = await pool.query(
@@ -246,7 +254,7 @@ exports.triggerAI = async (req, res, next) => {
   } catch (err) {
     if (err.code === 'ECONNREFUSED' || err.response?.status === 502) {
       return res.status(503).json({
-        error: 'AI service unavailable. Ensure FleetGuard AI is running at ' + (process.env.AI_SERVICE_URL || 'http://localhost:5000'),
+        error: 'AI service unavailable. Ensure FleetGuard AI is running at ' + (process.env.AI_SERVICE_URL || 'http://localhost:5001'),
         detail: err.message,
       });
     }

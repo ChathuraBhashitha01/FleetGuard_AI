@@ -1,3 +1,11 @@
+/**
+ * @module     Client Backend
+ * @author     Chathura Bhashitha <chathurabhashitha01@gmail.com>
+ * @description This file is part of the Client Backend of FleetGuard AI.
+ *              All logic in this file satisfies the Client Portal dependencies.
+ * @date       2026-03-01
+ */
+
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/database');
