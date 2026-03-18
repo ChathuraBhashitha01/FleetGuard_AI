@@ -1,4 +1,14 @@
+/**
+ * @module     Client Portal (Driver-Facing Interface)
+ * @author     Yuraj Malinda <yurajmalinda123@gmail.com>
+ * @role       Client Portal Developer
+ * @description This file is part of the Client (Driver) Portal of FleetGuard AI.
+ *              All pages and components in this section were developed by Yuraj Malinda.
+ * @date       2026-03-19
+ */
+
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button } from '@/app/components/ui/button';
 import { Card } from '@/app/components/ui/card';
@@ -12,6 +22,7 @@ import { inspectionService } from '@/services/inspectionService';
 import { timeAgo } from '@/utils/time';
 
 export function DriverDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useCurrentUser();
   const [stats, setStats] = useState<{ total_inspections?: number; month_inspections?: number; today_inspections?: number; avg_health_score?: number }>({});
@@ -102,10 +113,10 @@ export function DriverDashboard() {
                   </span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
-                  Welcome back, {user?.name?.split(' ')[0] || 'Driver'}
+                  {t('driverDashboard.welcome')}, {user?.name?.split(' ')[0] || 'Driver'}
                 </h1>
                 <p className="text-gray-700 dark:text-slate-300 text-lg">
-                  Ready for today's inspections
+                  {t('driverDashboard.ready')}
                 </p>
               </div>
             </div>
@@ -124,11 +135,11 @@ export function DriverDashboard() {
                 />
               </div>
               <div className="relative">
-                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Total Inspections</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">{t('driverDashboard.totalInspections')}</p>
                 <p className="text-4xl font-bold text-gray-900 dark:text-white mb-1 counter-animate">{stats.total_inspections ?? '—'}</p>
                 <div className="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs">
                   <TrendingUp className="h-3 w-3" />
-                  <span>Total inspections</span>
+                  <span>{t('driverDashboard.totalInspections')}</span>
                 </div>
               </div>
             </div>
@@ -144,10 +155,10 @@ export function DriverDashboard() {
                 />
               </div>
               <div className="relative">
-                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">This Month</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">{t('driverDashboard.thisMonth')}</p>
                 <p className="text-4xl font-bold text-gray-900 dark:text-white mb-1 counter-animate">{stats.month_inspections ?? '—'}</p>
                 <div className="flex items-center gap-1 text-gray-600 dark:text-slate-400 text-xs">
-                  <span>This month</span>
+                  <span>{t('driverDashboard.thisMonth')}</span>
                 </div>
               </div>
             </div>
@@ -163,7 +174,7 @@ export function DriverDashboard() {
                 />
               </div>
               <div className="relative">
-                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">Average Score</p>
+                <p className="text-gray-600 dark:text-slate-400 text-sm mb-2">{t('driverDashboard.avgScore')}</p>
                 <p className="text-4xl font-bold text-gray-900 dark:text-white mb-1 counter-animate">{stats.avg_health_score ?? '—'}</p>
                 <div className="flex items-center gap-1 text-gray-600 dark:text-slate-400 text-xs">
                   <span>Excellent performance</span>
@@ -176,24 +187,24 @@ export function DriverDashboard() {
         {/* Quick Actions - Large Image Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <ActionImageCard
-            title="Start Inspection"
-            subtitle="Begin new check"
+            title={t('driverDashboard.startInspection')}
+            subtitle={t('driverDashboard.beginNew')}
             image="https://images.unsplash.com/photo-1767339736233-f4b02c41ee4a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhdXRvbW90aXZlJTIwbWVjaGFuaWMlMjBwcm9mZXNzaW9uYWx8ZW58MXx8fHwxNzY5NDk1ODczfDA&ixlib=rb-4.1.0&q=80&w=1080"
             icon={<Camera className="h-5 w-5" />}
             onClick={() => navigate('/driver/select-vehicle')}
             delay={0}
           />
           <ActionImageCard
-            title="View History"
-            subtitle="Past inspections"
+            title={t('driverDashboard.viewHistory')}
+            subtitle={t('driverDashboard.pastInspections')}
             image="https://images.unsplash.com/photo-1765728617352-895327fcf036?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBvZmZpY2UlMjB3b3Jrc3BhY2UlMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc2OTQ4MDU2MXww&ixlib=rb-4.1.0&q=80&w=1080"
             icon={<Clock className="h-5 w-5" />}
             onClick={() => navigate('/driver/history')}
             delay={100}
           />
           <ActionImageCard
-            title="My Profile"
-            subtitle="Account settings"
+            title={t('driverDashboard.myProfile')}
+            subtitle={t('driverDashboard.accountSettings')}
             image="https://images.unsplash.com/photo-1768829781487-a697bc656313?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcm9mZXNzaW9uYWwlMjBkcml2ZXIlMjB1bmlmb3JtfGVufDF8fHx8MTc2OTQ5NTg3NXww&ixlib=rb-4.1.0&q=80&w=1080"
             icon={<User className="h-5 w-5" />}
             onClick={() => navigate('/driver/profile')}
@@ -204,14 +215,14 @@ export function DriverDashboard() {
         {/* Recent Inspections - Glassmorphism List */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Inspections</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{t('driverDashboard.recentInspections')}</h3>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/driver/history')}
               className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5"
             >
-              View All <ArrowRight className="h-4 w-4 ml-1" />
+              {t('driverDashboard.viewAll')} <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
           <div className="space-y-3">
@@ -230,9 +241,9 @@ export function DriverDashboard() {
               ))
             ) : (
               <div className="p-6 rounded-2xl bg-white/5 border border-white/10 text-center text-slate-400">
-                <p>No recent inspections</p>
+                <p>{t('driverDashboard.noRecent')}</p>
                 <Button variant="ghost" size="sm" className="mt-2" onClick={() => navigate('/driver/select-vehicle')}>
-                  Start New Inspection
+                  {t('driverDashboard.startNew')}
                 </Button>
               </div>
             )}
@@ -247,11 +258,11 @@ export function DriverDashboard() {
               <div className="absolute inset-0 rounded-xl bg-green-500/20 animate-ping"></div>
             </div>
             <div className="flex-1">
-              <p className="font-semibold text-gray-900 dark:text-white">Location Services Active</p>
-              <p className="text-sm text-gray-600 dark:text-slate-400">Colombo, Sri Lanka • Updated {lastLocationUpdate}</p>
+              <p className="font-semibold text-gray-900 dark:text-white">{t('driverDashboard.locationActive')}</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400">Colombo, Sri Lanka • {t('driverDashboard.updated')} {lastLocationUpdate}</p>
             </div>
             <Button size="sm" variant="ghost" className="text-gray-700 dark:text-slate-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10" onClick={handleLocationUpdate} disabled={isUpdatingLocation}>
-              {isUpdatingLocation ? 'Updating...' : 'Update'}
+              {isUpdatingLocation ? t('driverDashboard.updating') : t('driverDashboard.update')}
             </Button>
           </div>
         </GlassCard>

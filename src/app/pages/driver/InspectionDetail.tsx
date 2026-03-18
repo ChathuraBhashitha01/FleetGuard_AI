@@ -1,4 +1,14 @@
+/**
+ * @module     Client Portal (Driver-Facing Interface)
+ * @author     Yuraj Malinda <yurajmalinda123@gmail.com>
+ * @role       Client Portal Developer
+ * @description This file is part of the Client (Driver) Portal of FleetGuard AI.
+ *              All pages and components in this section were developed by Yuraj Malinda.
+ * @date       2026-03-19
+ */
+
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '@/app/components/ui/button';
 import { Card } from '@/app/components/ui/card';
@@ -38,6 +48,7 @@ import { healthColor, healthLabel } from '@/utils/healthScore';
 const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
 
 export function InspectionDetail() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const inspectionId = id ?? '';
@@ -136,15 +147,15 @@ export function InspectionDetail() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-400">Loading inspection...</p>
+        <p className="text-gray-500 dark:text-gray-400">{t('inspectionDetail.loading')}</p>
       </div>
     );
   }
   if (!inspection) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center gap-4">
-        <p className="text-gray-500 dark:text-gray-400">Inspection not found.</p>
-        <Button variant="outline" onClick={() => navigate('/driver/history')}>Back to History</Button>
+        <p className="text-gray-500 dark:text-gray-400">{t('inspectionDetail.notFound')}</p>
+        <Button variant="outline" onClick={() => navigate('/driver/history')}>{t('inspectionDetail.backToHistory')}</Button>
       </div>
     );
   }
@@ -164,7 +175,7 @@ export function InspectionDetail() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Inspection Details</h1>
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{t('inspectionDetail.title')}</h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{inspection.id}</p>
               </div>
             </div>
@@ -178,19 +189,19 @@ export function InspectionDetail() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleDownloadPdf}>
                   <Download className="h-4 w-4 mr-2" />
-                  Download PDF
+                  {t('inspectionDetail.downloadPdf')}
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Share2 className="h-4 w-4 mr-2" />
-                  Share
+                  {t('inspectionDetail.share')}
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <FileText className="h-4 w-4 mr-2" />
-                  Print
+                  {t('inspectionDetail.print')}
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-red-600 dark:text-red-400">
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
+                  {t('inspectionDetail.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -203,24 +214,24 @@ export function InspectionDetail() {
         <Card className="p-4 bg-white dark:bg-gray-800">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-500 dark:text-gray-400 mb-1">Report ID</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-1">{t('inspectionDetail.reportId')}</p>
               <p className="font-medium text-gray-900 dark:text-white">{inspection.id}</p>
             </div>
             <div>
-              <p className="text-gray-500 dark:text-gray-400 mb-1">Status</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-1">{t('inspectionDetail.status')}</p>
               <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                 {inspection.status}
               </Badge>
             </div>
             <div>
-              <p className="text-gray-500 dark:text-gray-400 mb-1">Date & Time</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-1">{t('inspectionDetail.dateTime')}</p>
               <p className="font-medium text-gray-900 dark:text-white flex items-center">
                 <Calendar className="h-3 w-3 mr-1" />
                 {format(inspection.date, 'PPp')}
               </p>
             </div>
             <div>
-              <p className="text-gray-500 dark:text-gray-400 mb-1">Inspector</p>
+              <p className="text-gray-500 dark:text-gray-400 mb-1">{t('inspectionDetail.inspector')}</p>
               <p className="font-medium text-gray-900 dark:text-white">{inspection.inspector}</p>
             </div>
           </div>
@@ -228,7 +239,7 @@ export function InspectionDetail() {
 
         {/* Vehicle Information */}
         <Card className="p-4 bg-white dark:bg-gray-800">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Vehicle Information</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{t('inspectionDetail.vehicleInfo')}</h3>
           <div className="flex items-center space-x-4 mb-4">
             <img
               src={inspection.vehicle.photo}
@@ -247,33 +258,33 @@ export function InspectionDetail() {
 
         {/* Customer Information */}
         <Card className="p-4 bg-white dark:bg-gray-800">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Customer Information</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">{t('inspectionDetail.customerInfo')}</h3>
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
               <User className="h-5 w-5 text-gray-400" />
               <div className="flex-1">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('inspectionDetail.customerName')}</p>
                 <p className="font-medium text-gray-900 dark:text-white">{inspection.customer.name}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <CreditCard className="h-5 w-5 text-gray-400" />
               <div className="flex-1">
-                <p className="text-sm text-gray-500 dark:text-gray-400">NIC/Passport</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('inspectionDetail.nicPassport')}</p>
                 <p className="font-medium text-gray-900 dark:text-white">{inspection.customer.nicPassport}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Phone className="h-5 w-5 text-gray-400" />
               <div className="flex-1">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('inspectionDetail.phone')}</p>
                 <p className="font-medium text-gray-900 dark:text-white">{inspection.customer.phone}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Calendar className="h-5 w-5 text-gray-400" />
               <div className="flex-1">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Rental Period</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('inspectionDetail.rentalPeriod')}</p>
                 <p className="font-medium text-gray-900 dark:text-white">
                   {format(inspection.customer.rentalStart, 'PP')} - {format(inspection.customer.rentalEnd, 'PP')}
                 </p>
@@ -284,7 +295,7 @@ export function InspectionDetail() {
 
         {/* Inspection Results */}
         <Card className="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-800/80">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-center">Inspection Results</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-center">{t('inspectionDetail.results')}</h3>
           <div className="flex justify-center mb-6">
             <div className="relative inline-flex items-center justify-center">
               <svg className="w-32 h-32">
@@ -324,15 +335,15 @@ export function InspectionDetail() {
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bg-white dark:bg-gray-700/50 rounded-lg p-3">
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{inspection.results.damageCount}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('inspectionDetail.total')}</p>
             </div>
             <div className="bg-white dark:bg-gray-700/50 rounded-lg p-3">
               <p className="text-2xl font-bold text-yellow-600">{inspection.results.severityBreakdown.minor}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Minor</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('inspectionDetail.minor')}</p>
             </div>
             <div className="bg-white dark:bg-gray-700/50 rounded-lg p-3">
               <p className="text-2xl font-bold text-orange-600">{inspection.results.severityBreakdown.moderate}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Moderate</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t('inspectionDetail.moderate')}</p>
             </div>
           </div>
         </Card>
@@ -345,7 +356,7 @@ export function InspectionDetail() {
                 <div className="flex items-center space-x-3">
                   <ImageIcon className="h-5 w-5 text-gray-400" />
                   <h3 className="font-semibold text-gray-900 dark:text-white">
-                    Photos ({inspection.photos.length})
+                    {t('inspectionDetail.photos')} ({inspection.photos.length})
                   </h3>
                 </div>
                 {photosExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -377,7 +388,7 @@ export function InspectionDetail() {
                 <div className="flex items-center space-x-3">
                   <FileText className="h-5 w-5 text-gray-400" />
                   <h3 className="font-semibold text-gray-900 dark:text-white">
-                    Damage Details ({inspection.damages.length})
+                    {t('inspectionDetail.damageDetails')} ({inspection.damages.length})
                   </h3>
                 </div>
                 {damagesExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
@@ -396,7 +407,7 @@ export function InspectionDetail() {
                       {damage.location}
                     </p>
                     <p className="text-xs text-gray-500">
-                      AI Confidence: <span className="font-medium">{damage.confidence}%</span>
+                      {t('inspectionDetail.aiConfidence')}: <span className="font-medium">{damage.confidence}%</span>
                     </p>
                   </div>
                 ))}
@@ -409,11 +420,11 @@ export function InspectionDetail() {
         <div className="grid grid-cols-2 gap-3">
           <Button className="bg-[#dc2626] hover:bg-[#b91c1c] text-white" onClick={handleDownloadPdf}>
             <Download className="h-4 w-4 mr-2" />
-            Download PDF
+            {t('inspectionDetail.downloadPdf')}
           </Button>
           <Button variant="outline">
             <Share2 className="h-4 w-4 mr-2" />
-            Share Report
+            {t('inspectionDetail.shareReport')}
           </Button>
         </div>
       </div>

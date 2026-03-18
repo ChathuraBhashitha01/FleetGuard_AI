@@ -1,3 +1,12 @@
+/**
+ * @module     Client Portal (Driver-Facing Interface)
+ * @author     Yuraj Malinda <yurajmalinda123@gmail.com>
+ * @role       Client Portal Developer
+ * @description This file is part of the Client (Driver) Portal of FleetGuard AI.
+ *              All pages and components in this section were developed by Yuraj Malinda.
+ * @date       2026-03-19
+ */
+
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router';
 import { Shield, Mail, Lock, Eye, EyeOff, User, Phone, Zap, Activity } from 'lucide-react';

@@ -1,4 +1,14 @@
+/**
+ * @module     Client Portal (Driver-Facing Interface)
+ * @author     Yuraj Malinda <yurajmalinda123@gmail.com>
+ * @role       Client Portal Developer
+ * @description This file is part of the Client (Driver) Portal of FleetGuard AI.
+ *              All pages and components in this section were developed by Yuraj Malinda.
+ * @date       2026-03-19
+ */
+
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { driverService } from '@/services/driverService';
@@ -50,6 +60,7 @@ interface NavItem {
   icon: React.ElementType;
   href?: string;
   children?: NavItem[];
+  key?: string;
 }
 
 const navigationItems: NavItem[] = [
@@ -57,25 +68,30 @@ const navigationItems: NavItem[] = [
     title: 'Dashboard',
     icon: Home,
     href: '/driver/dashboard',
+    key: 'dashboard',
   },
   {
     title: 'New Inspection',
     icon: Camera,
+    key: 'newInspection',
     children: [
       {
         title: 'Select Vehicle',
         icon: Car,
         href: '/driver/select-vehicle',
+        key: 'selectVehicle',
       },
       {
         title: 'Customer Details',
         icon: FileText,
         href: '/driver/inspection/customer-details',
+        key: 'customerDetails',
       },
       {
         title: 'Capture Photos',
         icon: Camera,
         href: '/driver/inspection/photos',
+        key: 'capturePhotos',
       },
     ],
   },
@@ -83,31 +99,37 @@ const navigationItems: NavItem[] = [
     title: 'History',
     icon: History,
     href: '/driver/history',
+    key: 'history',
   },
   {
     title: 'Profile',
     icon: User,
+    key: 'profile',
     children: [
       {
         title: 'View Profile',
         icon: User,
         href: '/driver/profile',
+        key: 'viewProfile',
       },
       {
         title: 'Edit Profile',
         icon: Settings,
         href: '/driver/profile/edit',
+        key: 'editProfile',
       },
       {
         title: 'Change Password',
         icon: Lock,
         href: '/driver/profile/change-password',
+        key: 'changePassword',
       },
     ],
   },
 ];
 
 export function DriverSidebar({ isOpen, onClose }: SidebarProps) {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useCurrentUser();
@@ -236,15 +258,15 @@ export function DriverSidebar({ isOpen, onClose }: SidebarProps) {
           <div className="mt-4 grid grid-cols-3 gap-2">
             <div className="text-center p-2 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-300/50 dark:border-slate-700/50 shadow-lg hover:shadow-xl transition-all">
               <p className="text-lg font-bold text-blue-600 dark:text-blue-400">{stats.month_inspections ?? '—'}</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Month</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">{t('driverDashboard.thisMonth')}</p>
             </div>
             <div className="text-center p-2 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-300/50 dark:border-slate-700/50 shadow-lg hover:shadow-xl transition-all">
               <p className="text-lg font-bold text-green-600 dark:text-green-400">{stats.total_inspections ?? '—'}</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Total</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">{t('driverDashboard.totalInspections')}</p>
             </div>
             <div className="text-center p-2 rounded-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-300/50 dark:border-slate-700/50 shadow-lg hover:shadow-xl transition-all">
               <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{stats.avg_health_score ?? '—'}</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400">Avg</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">{t('driverDashboard.avgScore')}</p>
             </div>
           </div>
         </div>
@@ -286,7 +308,7 @@ export function DriverSidebar({ isOpen, onClose }: SidebarProps) {
                   >
                     <div className="flex items-center gap-3">
                       <item.icon className="w-5 h-5" />
-                      <span>{item.title}</span>
+                      <span>{item.key ? t(`driverNav.${item.key}`) : item.title}</span>
                     </div>
                     {expandedItems.includes(item.title) ? (
                       <ChevronDown className="w-4 h-4" />
@@ -310,7 +332,7 @@ export function DriverSidebar({ isOpen, onClose }: SidebarProps) {
                           )}
                         >
                           <child.icon className="w-4 h-4" />
-                          <span>{child.title}</span>
+                          <span>{child.key ? t(`driverNav.${child.key}`) : child.title}</span>
                         </Link>
                       ))}
                     </div>
@@ -328,7 +350,7 @@ export function DriverSidebar({ isOpen, onClose }: SidebarProps) {
                   )}
                 >
                   <item.icon className="w-5 h-5" />
-                  <span>{item.title}</span>
+                  <span>{item.key ? t(`driverNav.${item.key}`) : item.title}</span>
                 </Link>
               )}
             </div>

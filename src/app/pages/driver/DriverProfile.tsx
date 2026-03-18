@@ -1,4 +1,14 @@
+/**
+ * @module     Client Portal (Driver-Facing Interface)
+ * @author     Yuraj Malinda <yurajmalinda123@gmail.com>
+ * @role       Client Portal Developer
+ * @description This file is part of the Client (Driver) Portal of FleetGuard AI.
+ *              All pages and components in this section were developed by Yuraj Malinda.
+ * @date       2026-03-19
+ */
+
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button } from '@/app/components/ui/button';
 import { Switch } from '@/app/components/ui/switch';
@@ -34,6 +44,7 @@ import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 export function DriverProfile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useCurrentUser();
   const [stats, setStats] = useState<{ total_inspections?: number; month_inspections?: number; avg_health_score?: number }>({});
@@ -60,25 +71,25 @@ export function DriverProfile() {
   };
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to log out?')) {
-      toast.success('Logged out successfully');
+    if (window.confirm(t('driverProfile.logoutConfirm'))) {
+      toast.success(t('driverProfile.logoutSuccess'));
       navigate('/driver/login');
     }
   };
 
   const handleNotificationsToggle = (checked: boolean) => {
     setSettings({ ...settings, notifications: checked });
-    toast.success(`Notifications ${checked ? 'enabled' : 'disabled'}`);
+    toast.success(`${t('driverProfile.notifications')} ${checked ? t('driverProfile.enabled') : t('driverProfile.disabled')}`);
   };
 
   const handleLocationToggle = (checked: boolean) => {
     setSettings({ ...settings, locationSharing: checked });
-    toast.success(`Location sharing ${checked ? 'enabled' : 'disabled'}`);
+    toast.success(`${t('driverProfile.locationSharing')} ${checked ? t('driverProfile.enabled') : t('driverProfile.disabled')}`);
   };
 
   const handleLanguageChange = (language: string) => {
     setSettings({ ...settings, language });
-    toast.success('Language changed');
+    toast.success(t('driverProfile.langChanged'));
   };
 
   return (
@@ -144,49 +155,49 @@ export function DriverProfile() {
         <div className="grid grid-cols-3 gap-4">
           <StatCard
             value={driver.totalInspections}
-            label="Total"
-            sublabel="Inspections"
+            label={t('driverProfile.total')}
+            sublabel={t('driverProfile.inspections')}
             delay={0}
           />
           <StatCard
             value={driver.thisMonthInspections}
-            label="This Month"
-            sublabel="Inspections"
+            label={t('driverProfile.thisMonth')}
+            sublabel={t('driverProfile.inspections')}
             delay={100}
           />
           <StatCard
             value={driver.avgHealthScore}
-            label="Avg Score"
-            sublabel="Performance"
+            label={t('driverProfile.avgScore')}
+            sublabel={t('driverProfile.performance')}
             delay={200}
           />
         </div>
 
         {/* Account Information */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-white mb-4">Account Information</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t('driverProfile.accountInfo')}</h3>
           
           <InfoCard
             icon={<User className="h-5 w-5" />}
-            label="Full Name"
+            label={t('driverProfile.fullName')}
             value={driver.name}
             delay={0}
           />
           <InfoCard
             icon={<Mail className="h-5 w-5" />}
-            label="Email Address"
+            label={t('driverProfile.emailAddress')}
             value={driver.email}
             delay={100}
           />
           <InfoCard
             icon={<Phone className="h-5 w-5" />}
-            label="Phone Number"
+            label={t('driverProfile.phoneNumber')}
             value={driver.phone}
             delay={200}
           />
           <InfoCard
             icon={<Calendar className="h-5 w-5" />}
-            label="Date Joined"
+            label={t('driverProfile.dateJoined')}
             value={driver.dateJoined.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             delay={300}
           />
@@ -194,7 +205,7 @@ export function DriverProfile() {
 
         {/* Settings Section */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-white mb-4">Settings</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t('driverProfile.settings')}</h3>
           
           {/* Language */}
           <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300 animate-fade-in-up">
@@ -203,7 +214,7 @@ export function DriverProfile() {
                 <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                   <Globe className="h-5 w-5 text-slate-300" />
                 </div>
-                <Label htmlFor="language" className="text-white">Language</Label>
+                <Label htmlFor="language" className="text-white">{t('driverProfile.language')}</Label>
               </div>
               <Select value={settings.language} onValueChange={handleLanguageChange}>
                 <SelectTrigger className="w-32 bg-white/5 border-white/10 text-white">
@@ -225,7 +236,7 @@ export function DriverProfile() {
                 <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                   <Bell className="h-5 w-5 text-slate-300" />
                 </div>
-                <Label htmlFor="notifications" className="text-white">Notifications</Label>
+                <Label htmlFor="notifications" className="text-white">{t('driverProfile.notifications')}</Label>
               </div>
               <Switch
                 id="notifications"
@@ -242,7 +253,7 @@ export function DriverProfile() {
                 <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                   <MapPin className="h-5 w-5 text-slate-300" />
                 </div>
-                <Label htmlFor="location" className="text-white">Location Sharing</Label>
+                <Label htmlFor="location" className="text-white">{t('driverProfile.locationSharing')}</Label>
               </div>
               <Switch
                 id="location"
@@ -253,9 +264,9 @@ export function DriverProfile() {
           </div>
         </div>
 
-        {/* Security Actions */}
+         {/* Security Actions */}
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-white mb-4">Security</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t('driverProfile.security')}</h3>
           
           <Button
             variant="outline"
@@ -263,7 +274,7 @@ export function DriverProfile() {
             onClick={() => navigate('/driver/profile/change-password')}
           >
             <Lock className="h-5 w-5 mr-3 text-slate-300" />
-            Change Password
+            {t('driverProfile.changePassword')}
           </Button>
           
           <Button 
@@ -271,7 +282,7 @@ export function DriverProfile() {
             className="w-full justify-start h-12 bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-white"
           >
             <Shield className="h-5 w-5 mr-3 text-slate-300" />
-            Privacy Policy
+            {t('driverProfile.privacyPolicy')}
           </Button>
 
           <Button 
@@ -279,7 +290,7 @@ export function DriverProfile() {
             className="w-full justify-start h-12 bg-white/5 hover:bg-white/10 border-white/10 hover:border-white/20 text-white"
           >
             <FileText className="h-5 w-5 mr-3 text-slate-300" />
-            Terms of Service
+            {t('driverProfile.termsOfService')}
           </Button>
         </div>
 
@@ -289,7 +300,7 @@ export function DriverProfile() {
           onClick={handleLogout}
         >
           <LogOut className="h-5 w-5 mr-2" />
-          Logout
+          {t('driverProfile.logout')}
         </Button>
       </div>
     </div>

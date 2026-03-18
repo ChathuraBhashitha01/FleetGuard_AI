@@ -1,4 +1,14 @@
+/**
+ * @module     Client Portal (Driver-Facing Interface)
+ * @author     Yuraj Malinda <yurajmalinda123@gmail.com>
+ * @role       Client Portal Developer
+ * @description This file is part of the Client (Driver) Portal of FleetGuard AI.
+ *              All pages and components in this section were developed by Yuraj Malinda.
+ * @date       2026-03-19
+ */
+
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button } from '@/app/components/ui/button';
 import { Input } from '@/app/components/ui/input';
@@ -48,6 +58,7 @@ const mockInspections: Array<{
 }> = [];
 
 export function InspectionHistory() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -100,7 +111,7 @@ export function InspectionHistory() {
   };
 
   const handleDelete = (inspectionId: string) => {
-    if (window.confirm('Are you sure you want to delete this inspection?')) {
+    if (window.confirm(t('inspectionHistory.deleteConfirm'))) {
       console.log('Delete:', inspectionId);
     }
   };
@@ -157,8 +168,8 @@ export function InspectionHistory() {
               <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/80 to-slate-950"></div>
             </div>
             <div className="relative h-full flex flex-col justify-end px-6 sm:px-8 pb-6">
-              <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Inspection History</h1>
-              <p className="text-slate-300">View and manage all past inspections</p>
+              <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">{t('inspectionHistory.title')}</h1>
+              <p className="text-slate-300">{t('inspectionHistory.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -172,7 +183,7 @@ export function InspectionHistory() {
               <Search className="absolute left-5 h-5 w-5 text-slate-400" />
               <Input
                 type="text"
-                placeholder="Search by vehicle number, customer or ID..."
+                placeholder={t('inspectionHistory.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-14 h-14 bg-transparent border-0 text-white placeholder:text-slate-500 focus-visible:ring-0"
@@ -184,24 +195,24 @@ export function InspectionHistory() {
           <div className="flex gap-3">
             <Select value={filterStatus} onValueChange={setFilterStatus}>
               <SelectTrigger className="w-32 bg-white/5 border-white/10 text-white backdrop-blur-md">
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t('inspectionHistory.status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="all">{t('inspectionHistory.all')}</SelectItem>
+                <SelectItem value="completed">{t('inspectionHistory.completed')}</SelectItem>
+                <SelectItem value="pending">{t('inspectionHistory.pending')}</SelectItem>
               </SelectContent>
             </Select>
 
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="flex-1 bg-white/5 border-white/10 text-white backdrop-blur-md">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t('inspectionHistory.sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="date-desc">Newest First</SelectItem>
-                <SelectItem value="date-asc">Oldest First</SelectItem>
-                <SelectItem value="score-desc">Highest Score</SelectItem>
-                <SelectItem value="score-asc">Lowest Score</SelectItem>
+                <SelectItem value="date-desc">{t('inspectionHistory.newestFirst')}</SelectItem>
+                <SelectItem value="date-asc">{t('inspectionHistory.oldestFirst')}</SelectItem>
+                <SelectItem value="score-desc">{t('inspectionHistory.highestScore')}</SelectItem>
+                <SelectItem value="score-asc">{t('inspectionHistory.lowestScore')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -209,7 +220,7 @@ export function InspectionHistory() {
           {/* Results Count */}
           <div className="px-1">
             <p className="text-sm text-slate-400">
-              {filteredInspections.length} {filteredInspections.length === 1 ? 'inspection' : 'inspections'} found
+              {t('inspectionHistory.found', { count: filteredInspections.length })}
             </p>
           </div>
         </div>
@@ -217,14 +228,14 @@ export function InspectionHistory() {
         {/* Inspection List */}
         {loading ? (
           <div className="p-12 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 text-center">
-            <p className="text-slate-400">Loading inspections...</p>
+            <p className="text-slate-400">{t('inspectionHistory.loading')}</p>
           </div>
         ) : filteredInspections.length === 0 ? (
           <div className="p-12 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 text-center">
             <FileText className="h-16 w-16 text-slate-500 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-white mb-2">No Inspections Found</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">{t('inspectionHistory.noInspections')}</h3>
             <p className="text-slate-400 mb-4">
-              {searchQuery ? 'Try adjusting your search criteria' : 'Start your first inspection'}
+              {searchQuery ? t('inspectionHistory.adjustSearch') : t('inspectionHistory.startFirst')}
             </p>
             {searchQuery && (
               <Button 
@@ -232,7 +243,7 @@ export function InspectionHistory() {
                 onClick={() => setSearchQuery('')}
                 className="bg-white/5 border-white/10 text-white hover:bg-white/10"
               >
-                Clear Search
+                {t('inspectionHistory.clearSearch')}
               </Button>
             )}
           </div>
@@ -257,6 +268,7 @@ export function InspectionHistory() {
 }
 
 function InspectionCard({ inspection, onView, onDownload, onShare, onDelete, delay }: any) {
+  const { t } = useTranslation();
   return (
     <div 
       className="group relative rounded-2xl overflow-hidden cursor-pointer animate-fade-in-up"
@@ -318,19 +330,19 @@ function InspectionCard({ inspection, onView, onDownload, onShare, onDelete, del
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onView(); }}>
                     <Eye className="h-4 w-4 mr-2" />
-                    View Details
+                    {t('inspectionHistory.viewDetails')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDownload(); }}>
                     <Download className="h-4 w-4 mr-2" />
-                    Download PDF
+                    {t('inspectionHistory.downloadPdf')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onShare(); }}>
                     <Share2 className="h-4 w-4 mr-2" />
-                    Share
+                    {t('inspectionHistory.share')}
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-red-600" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
+                    {t('inspectionHistory.delete')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -344,7 +356,7 @@ function InspectionCard({ inspection, onView, onDownload, onShare, onDelete, del
               {inspection.damageCount > 0 && (
                 <div className="flex items-center gap-2 text-yellow-400 text-sm">
                   <AlertTriangle className="h-4 w-4" />
-                  {inspection.damageCount} {inspection.damageCount === 1 ? 'damage' : 'damages'}
+                  {inspection.damageCount} {inspection.damageCount === 1 ? t('inspectionHistory.damage') : t('inspectionHistory.damages')}
                 </div>
               )}
             </div>
