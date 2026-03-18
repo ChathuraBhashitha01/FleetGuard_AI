@@ -1,3 +1,11 @@
+"""
+@module     AI Service
+@author     Bethmi Jayamila <bethmij@gmail.com>
+@description This file is part of the AI Damage Detection service of FleetGuard AI.
+             Developed and trained by Bethmi Jayamila.
+@date       2026-02-18
+"""
+
 import os
 import time
 from ultralytics import YOLO
