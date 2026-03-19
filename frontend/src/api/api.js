@@ -3,18 +3,12 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001/api',
   timeout: 30000,
-  headers: { 'Content-Type': 'application/json' },
 });
 
 // ── Attach JWT to every request automatically ─────────────────
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('fg_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
-
-  // Fix: Don't force application/json on FormData to allow automatic boundary generation
-  if (config.data instanceof FormData) {
-    delete config.headers['Content-Type'];
-  }
 
   return config;
 });

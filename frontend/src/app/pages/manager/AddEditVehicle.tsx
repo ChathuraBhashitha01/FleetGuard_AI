@@ -256,6 +256,7 @@ export function AddEditVehicle() {
             <div className="relative p-6">
               <h2 className="text-xl font-bold text-white mb-6">Vehicle Photos</h2>
               <input
+                id="vehicle_photo"
                 ref={fileInputRef}
                 type="file"
                 multiple
@@ -263,22 +264,17 @@ export function AddEditVehicle() {
                 className="hidden"
                 onChange={handleFilesSelected}
               />
-              <div
-                className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-white/40 transition-colors cursor-pointer"
-                onClick={handleUploadClick}
+              <label
+                htmlFor="vehicle_photo"
+                className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-white/40 transition-colors cursor-pointer block"
               >
                 <Upload className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                 <p className="text-white mb-2">Drag and drop photos here</p>
                 <p className="text-slate-400 text-sm mb-4">or click to browse</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-white/10 text-white"
-                  onClick={handleUploadClick}
-                >
+                <div className="inline-flex items-center justify-center rounded-md border border-white/10 px-4 py-2 text-sm text-white hover:bg-white/5 transition-colors">
                   Upload Photos
-                </Button>
-              </div>
+                </div>
+              </label>
               {photos.length > 0 && (
                 <p className="mt-3 text-sm text-slate-300">
                   {photos.length} photo{photos.length > 1 ? 's' : ''} selected
