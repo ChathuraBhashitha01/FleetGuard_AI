@@ -50,16 +50,13 @@ pipeline {
         }
 
         stage('Test — 80% Coverage Gate') {
-            steps {
+             steps {
                 dir('backend') {
-                    // Inject backend .env so Jest can connect to the test PostgreSQL DB.
-                    // Create credential: Kind=Secret file, ID=fleetguard-backend-env
-                    // Contents: copy of backend/.env pointing to the Jenkins test database.
                     withCredentials([file(credentialsId: 'fleetguard-backend-env', variable: 'ENV_FILE')]) {
                         sh 'cp $ENV_FILE .env'
                     }
+                    sh 'mkdir -p uploads'
                     echo 'Running Jest with 80% coverage threshold...'
-                    // Configured in backend/jest.config.js -> coverageThreshold.global = 80%
                     sh 'npm run test:coverage'
                 }
             }
