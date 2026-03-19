@@ -1,13 +1,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // FleetGuard AI — AI Microservice (TensorFlow.js / Express) — Jenkins Pipeline
-// Deploys to: https://micro.fleetguard.com
+// Deploys to: https://micro.teamforta.nl
 // DirectAdmin user: teamforta | Server: 109.163.225.82 | SSH port: 26
 //
 // Jenkins credentials required (Manage Jenkins > Credentials > global):
 //   fleetguard-ssh       — SSH Username with private key (user: teamforta)
 //   github-credentials   — Username with password (GitHub PAT)
 //
-// DirectAdmin Node.js App settings for micro.fleetguard.com:
+// DirectAdmin Node.js App settings for micro.teamforta.nl:
 //   Application Startup File: app.js
 //   Node.js Version: 20.x
 //   Application Mode: Production
@@ -23,10 +23,10 @@ pipeline {
         DEPLOY_USER  = 'teamforta'
         DEPLOY_HOST  = '109.163.225.82'
         DEPLOY_PORT  = '26'
-        APP_DIR      = '/home/teamforta/domains/micro.fleetguard.com/public_html'
+        APP_DIR      = '/home/teamforta/domains/micro.teamforta.nl/public_html'
         BACKUP_DIR   = '/home/teamforta/backups/fleetguard-ai'
-        NODE_BIN     = '/home/teamforta/nodevenv/domains/micro.fleetguard.com/public_html/20/bin'
-        HEALTH_URL   = 'https://micro.fleetguard.com/api/health'
+        NODE_BIN     = '/home/teamforta/nodevenv/domains/micro.teamforta.nl/public_html/20/bin'
+        HEALTH_URL   = 'https://micro.teamforta.nl/api/health'
     }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '10'))
