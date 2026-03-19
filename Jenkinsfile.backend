@@ -127,6 +127,11 @@ pipeline {
                     '''
                     echo 'Injecting production .env...'
                     withCredentials([file(credentialsId: 'fleetguard-backend-prod', variable: 'PROD_ENV')]) {
+                        sh '''
+                            ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                                ${DEPLOY_USER}@${DEPLOY_HOST} \
+                                "rm -f ${APP_DIR}/.env && chmod 755 ${APP_DIR}"
+                        '''
                         sh 'scp -P ${DEPLOY_PORT} -o StrictHostKeyChecking=no $PROD_ENV ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/.env'
                     }
                 }
