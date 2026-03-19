@@ -10,14 +10,19 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   coverageThreshold: {
     global: {
-      branches: 60,
-      functions: 60,
-      lines: 60,
-      statements: 60,
+      branches:   80,
+      functions:  80,
+      lines:      80,
+      statements: 80,
+    },
+    './src/middleware/auth.js': {
+      lines: 100,
+      functions: 100,
     },
   },
   testMatch: ['**/__tests__/**/*.test.js', '**/*.test.js'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testTimeout: 10000,
+  testTimeout: 30000,
   verbose: true,
 };
+

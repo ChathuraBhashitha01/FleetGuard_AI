@@ -17,8 +17,8 @@ export const authService = {
   },
 
   // Pass Google ID token from @react-oauth/google or similar lib
-  googleLogin: async (idToken) => {
-    const { data } = await api.post('/auth/google', { idToken });
+  googleLogin: async (idToken, role) => {
+    const { data } = await api.post('/auth/google', { idToken, ...(role && { role }) });
     localStorage.setItem('fg_token', data.token);
     localStorage.setItem('fg_user',  JSON.stringify(data.user));
     return data;
@@ -36,6 +36,13 @@ export const authService = {
 
   getMe: async () => {
     const { data } = await api.get('/auth/me');
+    return data;
+  },
+
+  deleteAccount: async () => {
+    const { data } = await api.delete('/auth/account');
+    localStorage.removeItem('fg_token');
+    localStorage.removeItem('fg_user');
     return data;
   },
 

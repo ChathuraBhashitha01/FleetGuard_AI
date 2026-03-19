@@ -15,7 +15,7 @@ export const PHOTO_TEMPLATES: Record<string, PhotoPosition[]> = {
     { id: 4, key: 'right', label: 'Right Side', instruction: 'Show the full right side of the vehicle', tips: ['Capture entire vehicle from front to rear', 'Include all doors and windows'], required: true },
     { id: 5, key: 'interior', label: 'Interior / Dashboard', instruction: 'Capture the interior cabin and seats', tips: ['Show front and rear seats clearly', 'Include steering wheel and center console'], required: true },
     { id: 6, key: 'dashboard', label: 'Dashboard/Odometer', instruction: 'Clearly show the odometer reading', tips: ['Odometer numbers must be sharp and readable', 'Include fuel gauge and warning lights'], required: true },
-    { id: 7, key: 'damage', label: 'Damage Close-up', instruction: 'Close-up of any visible damage (if any)', tips: ['Get within 1-2 feet of damage area', 'Ensure damage is clearly visible'], required: true },
+    { id: 7, key: 'damage', label: 'Pre-existing Damage (if any)', instruction: 'Close-up of any visible pre-existing damage, or a clear shot of the body if no damage exists', tips: ['If no damage, capture a clear panel shot to confirm condition', 'If damage exists, get within 1-2 feet so it is clearly visible'], required: true },
     { id: 8, key: 'odometer', label: 'Additional', instruction: 'Any additional angles or damage areas', tips: ['Capture any special features or concerns', 'Document unique vehicle conditions'], required: true },
   ],
   tuktuk: [

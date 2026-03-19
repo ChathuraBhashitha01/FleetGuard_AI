@@ -7,4 +7,5 @@ export const vehicleService = {
   create:      (body)       => api.post('/vehicles', body).then(r => r.data),
   update:      (id, body)   => api.put(`/vehicles/${id}`, body).then(r => r.data),
   updateStatus:(id, status) => api.patch(`/vehicles/${id}/status`, { status }).then(r => r.data),
+  remove:      (id)         => api.delete(`/vehicles/${id}`).then(r => r.data),
 };

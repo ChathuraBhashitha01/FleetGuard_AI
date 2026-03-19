@@ -19,11 +19,13 @@ import {
   Activity,
   MapPin,
   FileText,
-  Wrench
+  Wrench,
+  Trash2
 } from 'lucide-react';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import managerService from '@/services/managerService';
+import { vehicleService } from '@/services/vehicleService';
 import { timeAgo } from '@/utils/time';
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1758179128122-6079c9cb3e4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080';
@@ -85,8 +87,22 @@ export function VehicleDetails() {
   const handleStatusChange = async (newStatus: string) => {
     if (!id || !vehicle) return;
     const apiStatus = newStatus === 'Available' ? 'available' : newStatus === 'In-Use' ? 'in-use' : 'maintenance';
-    await managerService.updateVehicleStatus(id, apiStatus);
-    setVehicle((prev) => (prev ? { ...prev, status: newStatus } : null));
+    try {
+      await managerService.updateVehicleStatus(id, apiStatus);
+      setVehicle((prev) => (prev ? { ...prev, status: newStatus } : null));
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to update status');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!id || !window.confirm("Are you sure you want to delete this vehicle? This action cannot be undone.")) return;
+    try {
+      await vehicleService.remove(id);
+      navigate('/manager/fleet');
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to delete vehicle');
+    }
   };
 
   if (loading) {
@@ -131,8 +147,13 @@ export function VehicleDetails() {
             <Edit className="h-4 w-4 mr-2" />
             {t('vehicleDetails.edit')}
           </Button>
-          <Button variant="outline" size="icon" className="border-white/10 text-white">
-            <MoreVertical className="h-4 w-4" />
+          <Button 
+            variant="outline" 
+            onClick={handleDelete}
+            className="bg-red-600/20 hover:bg-red-600 border-red-500/30 text-white"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
           </Button>
         </div>
       </div>

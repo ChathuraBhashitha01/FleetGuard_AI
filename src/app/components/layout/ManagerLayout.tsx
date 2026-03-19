@@ -7,11 +7,11 @@
  */
 
 import { useState } from 'react';
-import { Menu, Bell, Sun, Moon } from 'lucide-react';
+import { Menu, Bell } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { ManagerSidebar } from './ManagerSidebar';
 import { LanguageSwitcher } from '@/app/components/common/LanguageSwitcher';
-import { useTheme } from 'next-themes';
+
 
 interface ManagerLayoutProps {
   children: React.ReactNode;
@@ -19,7 +19,7 @@ interface ManagerLayoutProps {
 
 export function ManagerLayout({ children }: ManagerLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
+
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -46,19 +46,7 @@ export function ManagerLayout({ children }: ManagerLayoutProps) {
           {/* Right Side */}
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="rounded-full"
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-5 h-5" />
-              ) : (
-                <Moon className="w-5 h-5" />
-              )}
-            </Button>
+
 
             {/* Notifications */}
             <Button variant="ghost" size="icon" className="rounded-full relative">

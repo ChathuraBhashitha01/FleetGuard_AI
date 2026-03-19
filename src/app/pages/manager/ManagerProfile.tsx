@@ -9,15 +9,40 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '@/app/components/ui/button';
-import { Edit, Mail, Phone, Calendar, Shield, TrendingUp, Car, FileText } from 'lucide-react';
+import { Edit, Mail, Phone, Calendar, Shield, TrendingUp, Car, FileText, Trash2 } from 'lucide-react';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import managerService from '@/services/managerService';
+import { authService } from '@/services/authService';
+import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/app/components/ui/dialog';
 
 export function ManagerProfile() {
   const navigate = useNavigate();
   const { user } = useCurrentUser();
   const [stats, setStats] = useState<{ total_vehicles?: number; driver_count?: number; month_inspections?: number; avg_health_score?: number }>({});
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await authService.deleteAccount();
+      toast.success('Account deleted successfully');
+      navigate('/manager/login');
+    } catch {
+      toast.error('Failed to delete account. Please try again.');
+      setDeleting(false);
+      setShowDeleteDialog(false);
+    }
+  };
 
   useEffect(() => {
     managerService.getDashboardStats().then(setStats).catch(() => {});
@@ -141,6 +166,45 @@ export function ManagerProfile() {
           Notification Settings
         </Button>
       </div>
+
+      {/* Delete Account */}
+      <Button
+        className="w-full h-12 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 hover:border-red-500/40 font-semibold"
+        onClick={() => setShowDeleteDialog(true)}
+      >
+        <Trash2 className="h-5 w-5 mr-2" />
+        Delete Account
+      </Button>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="bg-white dark:bg-slate-900 border-slate-300/50 dark:border-white/10">
+          <DialogHeader>
+            <DialogTitle className="text-slate-900 dark:text-white">Delete Account</DialogTitle>
+            <DialogDescription className="text-slate-600 dark:text-slate-400">
+              This action is permanent and cannot be undone. Your manager account and all associated data will be deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              className="border-slate-300/50 dark:border-white/10"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {deleting ? 'Deleting...' : 'Yes, Delete My Account'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

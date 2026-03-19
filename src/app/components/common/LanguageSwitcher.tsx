@@ -26,10 +26,13 @@ export function LanguageSwitcher() {
 
   const handleChange = async (lang: string) => {
     await i18n.changeLanguage(lang);
-    try {
-      await api.put('/user/preferences', { language: lang });
-    } catch {
-      // Silently fail if not logged in
+    const token = localStorage.getItem('fg_token');
+    if (token) {
+      try {
+        await api.put('/user/preferences', { language: lang });
+      } catch {
+        // Silently fail if not logged in
+      }
     }
   };
 

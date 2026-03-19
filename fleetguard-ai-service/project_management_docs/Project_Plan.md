@@ -1,118 +1,220 @@
-# FleetGuard AI Service: Master Project Plan and Execution Strategy Blueprint
+# Project Plan — FleetGuard AI
 
-## 1. Executive Summary
-The **FleetGuard AI Damage Detection Service** represents a paradigm shift in how vehicle condition assessment is conducted across our enterprise network. Historically, vehicle inspection and damage estimation have relied purely on human evaluation, a subjective process vulnerable to inconsistencies, fatigue, and varied degrees of expertise. This master project encapsulates the architecture, training, and deployment of a state-of-the-art computer vision pipeline designed to automate this workflow. 
-
-By leveraging the Ultralytics YOLOv8 (You Only Look Once, version 8) architecture, trained natively utilizing PyTorch on the extensive Kaggle VehiDE dataset, we aim to introduce a RESTful API capable of near-instantaneous damage classification. This comprehensive document serves as the supreme blueprint governing the project’s lifecycle, detailing the Work Breakdown Structure (WBS), absolute scope boundaries, critical resource allocations, timeline tracking, and stakeholder management frameworks required to deliver this mission-critical application by the strict Friday deadline.
-
----
-
-## 2. Project Background and Justification
-### 2.1. The Business Problem
-Currently, our fleet operations suffer an average delay of 48-72 hours during the intake/inspection phase before quotes can be formalized or vehicles cleared for dispatch. This bottleneck costs the operation extensive logistical capital. Furthermore, human adjusters have a documented 18% variance in severity classification (e.g., mistaking structural damage for a severe dent).
-
-### 2.2. The Technological Solution
-By introducing an automated backend AI microservice written in Python and Node.js (Express), integrated seamlessly with the upstream user interface, we can reduce the preliminary triage phase from hours to under 150 milliseconds. The deep learning classifier will standardize output into five hardened classes (dent, scratch, crack, broken_glass, structural_damage), mathematically linking confidence thresholds to automated business logic.
+**Document owner:** Start-up Manager — Bethmi Jayamila
+**Version:** 2.0 (Final)
+**Project deadline:** Friday, 28 March 2026
+**Status:** Delivered
 
 ---
 
-## 3. Detailed Project Objectives & KPI Tracking Matrix
-Our objectives follow the **SMART** methodology (Specific, Measurable, Achievable, Relevant, Time-bound).
+## 1. Project Overview
 
-| Objective Category | Target Description | Success KPI (Key Performance Indicator) | Deadline |
-|---|---|---|---|
-| **Model Precision** | Achieve high inference accuracy on validation data. | `mAP_50 > 85%`, `mAP_50-95 > 60%`, `Classification Loss < 0.8` | Thursday COB |
-| **System Latency** | Ensure the `/api/detect` inference runs swiftly. | Node API response `Health_Score` payload generated in `< 100ms`. | Thursday COB |
-| **System Resilience** | Prevent total backend failure if YOLO network fails to load or hardware bottlenecks occur. | Implement `STUB_MODE` (TFJS/mock fallback) triggering seamlessly. 0% downtime on the main endpoint during model swaps. | Wednesday COB |
-| **Deliverable Quality** | All organizational documentation fully realized and formalized. | 6 Managerial Documents submitted, <5 minute video edited and approved. | Friday COB |
+### 1.1 Project Name
 
----
+**FleetGuard AI** — AI-Powered Vehicle Inspection and Fleet Management System
 
-## 4. Comprehensive Scope Management
-### 4.1. In-Scope Activities
-To ensure we do not fall victim to "Scope Creep," the following items are strictly designated as the boundaries of execution:
-1. **Data Acquisition & ETL (Extract, Transform, Load):** Downloading the Kaggle VehiDE payload. Utilizing `download_dataset.py` to securely extract and format the subsets.
-2. **Directory Restructuring:** Automating the renaming of `./training` and `./validation` directories into `./train` and `./val` to adhere to Ultralytics YOLO standards.
-3. **Model Training:** Deploying `train.py` utilizing `yolov8n-cls.pt` baseline weights, targeting 50 epochs on Apple Silicon (MPS layer) or Intel (CPU layer) hardware.
-4. **API Wrapper Development:** Creating `app.js` using `express` and `multer` for receiving `.jpeg`/`.jpg` byte streams, decoding payloads, and triggering the inference engine.
-5. **Defensive Architecture:** Building the TFJS in-memory array manipulation and `STUB_MODE` constants to shield the frontend from AI-layer crashes.
+### 1.2 Problem Statement
 
-### 4.2. Out-of-Scope Activities
-1. **Frontend UI/UX Development:** Creating the React/iOS/Android dashboard is the responsibility of another squad. We strictly provide the JSON endpoint.
-2. **Database Integration:** SQL/NoSQL storage of historical inferences is outside this sprint's boundaries.
-3. **Video Stream Processing:** The API will only accept single-frame image captures, not continuous WebRTC or RTSP video streams.
+Sri Lankan travel agencies manage large vehicle fleets using paper-based inspection forms. This results in inconsistent damage reporting, no photographic audit trail, no real-time fleet visibility for managers, and lengthy dispute resolution when rental customers contest damage charges. The manual process averages 45–60 minutes per vehicle handover.
+
+### 1.3 Solution
+
+A three-tier web application:
+
+| Tier | Technology | Purpose |
+| --- | --- | --- |
+| Frontend SPA | React 18 + TypeScript + Vite | Driver inspection portal and manager dashboard |
+| Backend API | Node.js + Express + PostgreSQL | Business logic, authentication, data persistence |
+| AI Microservice | Python + Flask + YOLOv8 | Computer vision damage detection from inspection photos |
 
 ---
 
-## 5. Exhaustive Work Breakdown Structure (WBS)
-The project is divided into hierarchical phases to isolate deliverables and allocate resources efficiently.
+## 2. Team and Role Assignments
 
-**Phase 1.0: Project Governance & Setup**
-- 1.1 Draft initial charters and Master Project Plan.
-- 1.2 Define Code of Conduct and Escalation Matrices.
-- 1.3 Instantiate GitHub Git repository, branching rules, and `.gitignore`.
-
-**Phase 2.0: Environmental Engineering**
-- 2.1 Establish Python `venv` parameters and freeze `requirements.txt`.
-- 2.2 Configure Node.js runtime and `package.json` (`@tensorflow/tfjs`, `multer`).
-- 2.3 Verify Metal Performance Shaders (MPS) bindings via PyTorch nightly/stable checks.
-
-**Phase 3.0: Data Pipeline Preparation**
-- 3.1 Authenticate Kaggle API (`~/.kaggle/kaggle.json`).
-- 3.2 Fetch and unzip VehiDE dataset via `download_dataset.py`.
-- 3.3 Validate dataset integrity through `data.yaml` schema alignment.
-
-**Phase 4.0: Artificial Intelligence Training**
-- 4.1 Execute first test-run (`epochs=1`) to verify memory mapping.
-- 4.2 Execute Master training loop (`epochs=50`) over `data1a`.
-- 4.3 Export optimized `best.pt` weights and serialize for the API.
-
-**Phase 5.0: API Integration and Fallback Matrix**
-- 5.1 Develop image byte decoder `decodeImage()` for JS tensor translation.
-- 5.2 Implement the `/api/detect` routing logic.
-- 5.3 Configure `STUB_MODE` mock-logic block to deploy if `tf.predict()` throws an exception.
-
-**Phase 6.0: Finalization & Handoff**
-- 6.1 Conduct exhaustive Quality and Risk assessments.
-- 6.2 Write the final Lessons Learned post-mortem.
-- 6.3 Record, edit, and export the comprehensive <5-minute video demonstration.
+| Name | Project Role | Technical Responsibility |
+| --- | --- | --- |
+| Bethmi Jayamila | Start-up Manager | AI microservice, admin frontend, project governance |
+| Chathura Bhashitha | Project Manager | Client backend (auth, inspections, photos, email) |
+| Kalindu Tharanga | Risk & Scheduling Manager | Admin backend (vehicles, manager dashboard, GPS, analytics, smart assignment) |
+| Iruwan Tharaka | Quality Manager | Test planning, execution, defect tracking, QA sign-off |
 
 ---
 
-## 6. Detailed Project Schedule and Timeline
-We operate on a heavily compressed two-week sprint framework aiming for extreme velocity.
+## 3. Objectives and KPIs
 
-**Week 1: Setup and Data Focus**
-- **Monday:** Kickoff Meeting, Role Assignments, GitHub Initialization.
-- **Tuesday:** Finalize local environment parity. Resolve `numpy` C-API issues across Intel/ARM chips.
-- **Wednesday:** Download and scrub the VehiDE dataset. Verify tensor compatibility.
-- **Thursday:** Write `train.py` logic. Perform early test compilations.
-- **Friday:** Kick off the primary 50-epoch training sequence over the weekend.
-
-**Week 2: Integration and Finalization Focus**
-- **Monday:** Review training loss metrics. Perform any required transfer-learning retrains. Lock the model weights.
-- **Tuesday:** Build `.pt` integration into `app.js`. Develop the Node/Express backend.
-- **Wednesday:** Thorough API integration testing (`STUB_MODE` fallback verification, 400 Bad Request error testing).
-- **Thursday:** Complete UI/UX Video recording. Finalize all Risk, Quality, and Communication documentation.
-- **Friday (End of Project):** Final sign-off meeting. Complete repository push. Document hand-off.
+| # | Objective | KPI | Target |
+| --- | --- | --- | --- |
+| O1 | Digitalise pre/post rental inspection | Inspections captured digitally | 100% |
+| O2 | AI damage detection from photos | AI analysis available for all inspections | Yes |
+| O3 | Manager real-time fleet visibility | Dashboard load time | < 3 seconds |
+| O4 | Legally defensible inspection reports | Signed PDF generated per inspection | Yes |
+| O5 | Multi-language support | UI translated in EN, SI, TA | 100% of strings |
+| O6 | GPS fleet tracking | Live vehicle locations on map | < 30s refresh |
+| O7 | Smart vehicle assignment | AI-scored recommendations returned | < 500ms |
 
 ---
 
-## 7. Resource Allocation Model
-For maximum parallelization, resources must operate across specialized work clusters:
+## 4. Scope
 
-| Role | Core Responsibilities | Specific Output / Deliverable Focus |
-|---|---|---|
-| **Start-up Manager** | Master project coordination, initial governance, blocker mitigation. | Project Plan / Charter, Code of Conduct, GitHub baseline. |
-| **Project Manager** | Agile Scrum Master, timeline accountability, stakeholder management. | Lessons Learned Report, Executive Summary, Final Video Demo. |
-| **Quality Manager** | Inference precision tracking, QA/QC manual validation, Code Reviewer. | Quality Plan, Unit Test execution, Loss metric validation. |
-| **Risk Manager** | Risk Register maintenance, contingency protocol execution. | Risk Plan and Log, Issue Tracking, Hardware troubleshooting. |
-| **Scheduling Manager** | Meeting coordination, timeline adherence, communication logs. | Communication Plan, Meeting Minutes, Slack channel management. |
+### 4.1 In Scope
+
+- Driver portal: registration, login, 8-step inspection workflow, GPS, profile
+- Manager portal: fleet management, inspection review, driver management, analytics, smart assignment, map view, notifications
+- AI microservice: YOLOv8 damage classification, health score calculation, STUB_MODE fallback
+- PostgreSQL database: role-based schema, full audit trail
+- JWT + Google OAuth2 authentication
+- PDF report generation with digital signatures
+- Three-language UI (English, Sinhala, Tamil)
+- Email-based password reset
+- PDPA 2022 GPS data compliance (90-day retention)
+
+### 4.2 Out of Scope
+
+- Native iOS or Android applications (web only)
+- Billing, invoicing, or payment processing
+- Integration with external ERP or telematics hardware
+- Offline-first / service worker PWA
+- Real-time push notifications (WebSocket)
+- Multi-tenant SaaS billing infrastructure
 
 ---
 
-## 8. Change Control and Project Governance
-Any deviations from this Master Project Plan—particularly alterations to the `Out-of-Scope` boundaries or additions of new technology stacks (e.g., swapping YOLO for MobileNet)—must undergo strict change control. 
-1. **Proposal:** Engineer submits a Change Request (CR) documenting time-cost vs. benefit.
-2. **Review:** Project manager evaluates impact on the Friday deadline.
-3. **Approval:** A majority vote from the managerial team is required to merge the change into the sprint backlog.
+## 5. Work Breakdown Structure (WBS)
+
+### Phase 1 — Foundation (Sprint 1, Weeks 1–2)
+
+| Task | Owner | Deliverable |
+| --- | --- | --- |
+| 1.1 React + TypeScript + Vite project scaffold | Bethmi | Frontend running on port 5173 |
+| 1.2 Node.js + Express app scaffold | Chathura | Backend running on port 3001 |
+| 1.3 Full PostgreSQL schema design and deployment | Chathura | `schema.sql` with 11 tables |
+| 1.4 JWT authentication (register/login/me) | Chathura | Auth endpoints working |
+| 1.5 Google OAuth2 sign-in | Chathura | Google login working |
+| 1.6 Role-based middleware (driver/manager/admin) | Chathura | Protected routes enforced |
+| 1.7 Landing page and login/signup UI | Bethmi | Public pages accessible |
+| 1.8 Python Flask AI service scaffold | Bethmi | Port 5001 health check responding |
+
+### Phase 2 — Core Resource APIs (Sprint 2, Weeks 3–4)
+
+| Task | Owner | Deliverable |
+| --- | --- | --- |
+| 2.1 Vehicle CRUD API | Kalindu | GET/POST/PUT vehicles |
+| 2.2 Inspection lifecycle (create/complete) | Chathura | Inspection endpoints |
+| 2.3 Photo upload (single + batch) | Chathura | Multer upload working |
+| 2.4 Digital signature upload | Chathura | Signature storage |
+| 2.5 Email password reset flow | Chathura | Reset emails delivered |
+| 2.6 Vehicle and inspection service modules (frontend) | Bethmi | API calls working |
+
+### Phase 3 — Driver Inspection Workflow (Sprint 3, Weeks 5–6)
+
+| Task | Owner | Deliverable |
+| --- | --- | --- |
+| 3.1 InspectionContext state management | Bethmi | Shared state across 8 steps |
+| 3.2 8-step inspection UI (VehicleSelection → ReportGenerated) | Bethmi | Full workflow navigable |
+| 3.3 Camera interface with 8-angle guide | Bethmi | Photos captured correctly |
+| 3.4 AI processing screen and results display | Bethmi | Damage cards shown |
+| 3.5 Digital signature canvas (driver + customer) | Bethmi | Signatures saved |
+| 3.6 AI trigger endpoint (backend → AI service) | Chathura | Damage detections stored |
+| 3.7 PDF report generation (pdfkit) | Chathura | PDF downloadable |
+| 3.8 YOLOv8 inference + STUB_MODE | Bethmi | AI service returning results |
+
+### Phase 4 — Manager Dashboard and Oversight (Sprint 4, Weeks 7–8)
+
+| Task | Owner | Deliverable |
+| --- | --- | --- |
+| 4.1 Manager dashboard stats API | Kalindu | Fleet KPIs returned |
+| 4.2 Inspection review (approve/flag) | Kalindu | Review endpoint working |
+| 4.3 Analytics API (health trend, damage types) | Kalindu | Chart data returned |
+| 4.4 Manager dashboard UI | Bethmi | KPI cards + activity feed |
+| 4.5 Manager inspection review UI | Bethmi | Review form working |
+| 4.6 Driver management UI | Bethmi | Driver CRUD in portal |
+| 4.7 Analytics dashboard UI | Bethmi | Charts rendering |
+
+### Phase 5 — GPS, Map View, Smart Assignment (Sprint 5, Weeks 9–10)
+
+| Task | Owner | Deliverable |
+| --- | --- | --- |
+| 5.1 GPS location update endpoint | Kalindu | Driver coordinates stored |
+| 5.2 Fleet vehicle locations endpoint | Kalindu | All GPS positions returned |
+| 5.3 Smart assignment scoring algorithm | Kalindu | Ranked recommendations |
+| 5.4 GPS auto-update on driver app load | Bethmi | Location posted on login |
+| 5.5 Google Maps view with vehicle markers | Bethmi | Map renders with vehicles |
+| 5.6 Smart assignment UI | Bethmi | Form + ranked results |
+
+### Phase 6 — i18n, Preferences, Polish, Testing (Sprint 6, Weeks 11–12)
+
+| Task | Owner | Deliverable |
+| --- | --- | --- |
+| 6.1 i18next setup + language detection | Bethmi | Language switching works |
+| 6.2 English translation file (526 keys) | Bethmi | `en.json` complete |
+| 6.3 Sinhala translation file (526 keys) | Bethmi | `si.json` complete |
+| 6.4 Tamil translation file (526 keys) | Bethmi | `ta.json` complete |
+| 6.5 User preferences table + API | Kalindu / Chathura | Language persists across sessions |
+| 6.6 Notifications endpoint + UI | Kalindu | Notification centre working |
+| 6.7 Demo dataset (users, vehicles, inspections, images) | Chathura | `npm run demo` working |
+| 6.8 Backend integration tests | Chathura | Jest tests passing |
+| 6.9 Frontend component tests | Iruwan | Vitest tests passing |
+| 6.10 QA final sign-off | Iruwan | All critical paths verified |
+| 6.11 Author attribution headers | All | All source files attributed |
+| 6.12 Project management documents finalized | All | 6 documents submitted |
+
+---
+
+## 6. Project Schedule
+
+| Sprint | Weeks | Theme | Key Milestone |
+| --- | --- | --- | --- |
+| Sprint 1 | 1–2 | Foundation & Auth | Database schema live; users can register and log in |
+| Sprint 2 | 3–4 | Core Resource APIs | Vehicles, inspections, photos, password reset |
+| Sprint 3 | 5–6 | Driver Inspection Workflow | End-to-end inspection with AI + PDF + signatures |
+| Sprint 4 | 7–8 | Manager Dashboard | Fleet metrics, inspection review, analytics |
+| Sprint 5 | 9–10 | GPS & Smart Assignment | Live map view, ranked vehicle recommendations |
+| Sprint 6 | 11–12 | i18n, Polish & Testing | 3-language UI, demo data, QA sign-off, submission |
+
+**Project End Date:** Friday, 28 March 2026
+
+---
+
+## 7. Resource Allocation
+
+| Resource | Type | Usage |
+| --- | --- | --- |
+| React 18 + TypeScript + Vite | Frontend framework | Driver + manager portal UI |
+| Node.js 18 + Express 4 | Backend runtime | REST API server |
+| PostgreSQL 15 | Database | All persistent data |
+| Python 3.8 + Flask | AI service | YOLOv8 inference |
+| YOLOv8 (ultralytics) | ML model | Damage classification |
+| Google Maps API | External API | Map view + geocoding |
+| Google OAuth2 | External API | Sign-in |
+| GitHub | Version control | Source code, PRs, issues |
+| Gmail SMTP | External service | Password reset emails |
+
+---
+
+## 8. Change Control
+
+Any change to the agreed sprint scope must follow this process:
+
+1. **Proposal** — Engineer raises a Change Request (CR) in the team chat with impact assessment.
+2. **Review** — Project Manager evaluates impact on the Friday deadline.
+3. **Decision** — Start-up Manager approves or rejects within 4 hours.
+4. **Log** — Decision is recorded in the Communication Plan minutes.
+
+---
+
+## 9. Deliverables Summary
+
+| Deliverable | Owner | Status |
+| --- | --- | --- |
+| Frontend web application | Bethmi | Delivered |
+| Backend REST API | Chathura + Kalindu | Delivered |
+| AI microservice | Bethmi | Delivered |
+| PostgreSQL schema + migrations | Chathura | Delivered |
+| Demo dataset (`npm run demo`) | Chathura | Delivered |
+| Project Plan | Bethmi | This document |
+| Code of Conduct | Bethmi | Delivered |
+| Lessons Learned Report | Chathura | Delivered |
+| Quality Plan | Iruwan | Delivered |
+| Risk Plan and Log | Kalindu | Delivered |
+| Communication Plan and Meeting Minutes | Kalindu | Delivered |
+| < 5 minute demo video | Chathura | To be recorded |

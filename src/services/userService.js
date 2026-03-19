@@ -10,9 +10,7 @@ export const userService = {
     api.put(`${base}/preferences`, data).then((r) => r.data),
 
   updateProfile: (formData) =>
-    api.put(`${base}/profile`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }).then((r) => r.data),
+    api.put(`${base}/profile`, formData).then((r) => r.data),
 
   changePassword: (currentPassword, newPassword) =>
     api.put(`${base}/change-password`, {

@@ -43,7 +43,9 @@ export function EditDriverProfile() {
           name: user.name || '',
           email: user.email || '',
           phone: user.phone || '',
-          photoUrl: user.avatar_url ? `${API_BASE.replace('/api', '')}${user.avatar_url}` : '',
+          photoUrl: user.avatar_url 
+            ? (user.avatar_url.startsWith('http') ? user.avatar_url : `${API_BASE.replace('/api', '')}${user.avatar_url}`) 
+            : '',
         });
       })
       .catch(() => toast.error('Failed to load profile'))
@@ -78,7 +80,10 @@ export function EditDriverProfile() {
       fd.append('name', formData.name.trim());
       if (formData.phone) fd.append('phone', formData.phone.trim());
       if (avatarFile) fd.append('avatar', avatarFile);
-      await userService.updateProfile(fd);
+      const response = await userService.updateProfile(fd);
+      if (response.success && response.data) {
+        localStorage.setItem('fg_user', JSON.stringify(response.data));
+      }
       setHasUnsavedChanges(false);
       setAvatarFile(null);
       setAvatarPreview(null);
@@ -143,8 +148,8 @@ export function EditDriverProfile() {
                 className="hidden"
                 onChange={handleFileSelect}
               />
-              <Avatar className="w-24 h-24">
-                <AvatarImage src={avatarSrc} alt={formData.name} />
+              <Avatar className="w-24 h-24 cursor-pointer" onClick={handlePhotoChange}>
+                <AvatarImage src={avatarSrc} alt={formData.name} className="object-cover w-full h-full" />
                 <AvatarFallback className="bg-[#1976d2] text-white text-2xl">
                   {formData.name.split(' ').map((n) => n[0]).join('') || '?'}
                 </AvatarFallback>

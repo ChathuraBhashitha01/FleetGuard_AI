@@ -10,6 +10,12 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('fg_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  // Fix: Don't force application/json on FormData to allow automatic boundary generation
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
   return config;
 });
 

@@ -44,6 +44,7 @@ import {
 } from '@/app/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { LOGO_FULL } from '@/lib/logo';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(' ');
@@ -240,8 +241,16 @@ export function DriverSidebar({ isOpen, onClose }: SidebarProps) {
         {/* Driver Info */}
         <div className="p-4 border-b border-slate-300/50 dark:border-slate-700/50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-green-500 flex items-center justify-center shadow-xl ring-2 ring-slate-300/50 dark:ring-slate-700/50">
-              <User className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-green-500 flex items-center justify-center shadow-xl ring-2 ring-slate-300/50 dark:ring-slate-700/50">
+              {user?.avatar_url ? (
+                <img 
+                  src={user.avatar_url.startsWith('http') ? user.avatar_url : `${API_BASE.replace('/api', '')}${user.avatar_url}`} 
+                  alt={user.name} 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <User className="w-6 h-6 text-white" />
+              )}
             </div>
             <div className="flex-1">
               <p className="font-semibold text-sm text-slate-900 dark:text-white drop-shadow">

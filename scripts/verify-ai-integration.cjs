@@ -10,7 +10,7 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 
-const AI_URL = process.env.AI_SERVICE_URL || 'http://localhost:5000';
+const AI_URL = process.env.AI_SERVICE_URL || 'http://localhost:5001';
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
 
 function log(msg, ok = null) {
@@ -59,7 +59,7 @@ async function testAiDetect() {
     const req = http.request(
       {
         hostname: 'localhost',
-        port: 5000,
+        port: 5001,
         path: '/api/detect',
         method: 'POST',
         headers: {

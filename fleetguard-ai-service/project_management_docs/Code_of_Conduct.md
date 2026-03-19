@@ -1,67 +1,154 @@
-# FleetGuard AI Service: Master Code of Conduct & Ethical Framework
+# Code of Conduct — FleetGuard AI
 
-## 1. Vision Statement and Letter from Leadership
-Welcome to the FleetGuard AI project squad. Developing an artificial intelligence pipeline that can accurately interpret physical vehicle damage requires more than just excellent coding capabilities; it demands a unified, respectful, and ethically aligned development team. Our output directly influences logistical operations and financial quotations. Because our software wields this power, our behavior during its construction must be held to the absolute highest professional standard. This Master Code of Conduct outlays our shared values, engineering heuristics, unacceptable behavior thresholds, and detailed conflict resolution procedures.
-
----
-
-## 2. Core Ethical Framework and Shared Values
-The core functioning of this team relies on psychological safety, mutual respect, and accountability.
-
-**A. Psychological Safety & Open Inquiry**
-No developer should feel intimidated when raising questions regarding architecture or methodology. Questions like "Why are we using Node.js instead of Python Flask?" or "How does `STUB_MODE` actually prevent a memory leak?" are not only welcomed—they are required. We are a team of varying experience levels; educating each other is a primary objective.
-
-**B. Quality-First Mindset over Hacking**
-While speed is necessary to meet the Friday deadline, it cannot come at the cost of deploying "spaghetti code." We will not bypass testing to merge a pull request. We embrace defensive programming, error handling, and robust try-catch mechanisms over brittle, happy-path-only code.
-
-**C. Radical Transparency and Ownership**
-Mistakes will occur. A local training script will crash the terminal. An API endpoint might leak memory causing an out-of-memory (OOM) error. If you deploy code that introduces a bug, own it transparently in the public Slack channel. The squad approaches failures as systemic issues to solve, not personal character flaws to punish.
+**Document owner:** Start-up Manager — Bethmi Jayamila
+**Version:** 2.0 (Final)
+**Applies to:** All team members — Bethmi Jayamila, Chathura Bhashitha, Kalindu Tharanga, Iruwan Tharaka
 
 ---
 
-## 3. Engineering and Development Guidelines
-Conduct extends directly into how we interact with the repository.
+## 1. Purpose
 
-### 3.1. Code Reviews and Pull Requests (PRs)
-- **Review with Empathy:** When assigned as a code reviewer, evaluate the code, not the coder. Avoid phrases like, "Why did you write it this way?" Instead, utilize, "What do you think about refactoring this array manipulation to utilize `tf.dispose()` to save memory?"
-- **Mandatory Description:** Never submit an empty PR description. Always include the "Why", "What", and "How" of the code change, especially when altering the `data.yaml` or YOLO model weights.
-
-### 3.2. Environmental Responsibility
-- Do not pollute the master branch with undocumented hardware checks. If you write a fallback (`device='cpu'` after an `mps` failure), meticulously comment on why that block exists for future developers who may not be on Apple Silicon.
-- Properly respect `.gitignore`. Never upload local `venv` folders, `.DS_Store` files, or the Kaggle API `kaggle.json` credentials to the remote repository. Doing so compromises security and clutters the workspace.
+The FleetGuard AI team is building a production-grade system used by real drivers, managers, and rental customers in Sri Lanka. Our software directly influences vehicle damage records, rental dispute outcomes, and fleet safety decisions. The quality of our teamwork determines the quality of what we ship. This Code of Conduct defines the standards of behaviour, engineering practice, and collaboration that every team member commits to for the duration of the project.
 
 ---
 
-## 4. Diversity, Equity, and Inclusion (DEI)
-FleetGuard AI thrives on the diverse backgrounds of its managerial cohort. We categorically mandate an environment free from discrimination based on race, gender identity and expression, sexual orientation, disability, physical appearance, body size, age, or religion. Team members are expected to utilize inclusive language in all documentation, comments, and meeting transcripts. 
+## 2. Core Values
+
+### 2.1 Shared Ownership
+
+Every team member owns the outcome, not just their assigned component. If the AI service breaks the driver workflow, that is everyone's problem. If the database migration causes the manager dashboard to fail, we solve it together. Blame culture is prohibited.
+
+### 2.2 Transparency
+
+Work is visible by default. Progress, blockers, and pivots are communicated promptly — not at the next scheduled meeting, but as soon as they are known. No one on this team should be surprised by a missed commitment.
+
+### 2.3 Quality Over Speed
+
+The system is used by real people in real field conditions. A rushed feature that breaks in production is worse than a delayed feature that works. We do not merge code without testing. We do not bypass review to hit a milestone.
+
+### 2.4 Respect for Each Other's Time
+
+Every meeting has an agenda. Every commit has a message. Every PR has a description. We do not waste time through poor preparation.
+
+### 2.5 Inclusive Communication
+
+Team members bring different areas of expertise. Bethmi leads AI and frontend, Chathura leads client-side backend, Kalindu leads admin backend, Iruwan leads quality. We respect each other's domain knowledge and ask before overriding another person's technical decision.
 
 ---
 
-## 5. Unacceptable Behaviors (Zero-Tolerance Policy)
-The following actions are strictly prohibited and will result in immediate escalation:
-1. **Harassment & Intimidation:** Any form of belittlement, aggressive posturing in meetings, or relentless unsolicited criticism.
-2. **Knowledge Hoarding / Gatekeeping:** Intentionally obfuscating the AI architecture, refusing to comment on complex Python tensor matrices, or withholding access to the VehiDE Kaggle subset to maintain power or indispensability within the team.
-3. **Deliberate Sabotage:** Introducing malicious loops, intentionally bypassing the `STUB_MODE` to crash downstream team apps during testing, or tampering with the model weight configurations (`best.pt`) to negatively skew the accuracy.
-4. **Unprofessional Communication:** Using Slack or team meetings to broadcast derogatory remarks regarding internal tools, other departments, or project constraints.
+## 3. Engineering Standards
+
+### 3.1 Code Reviews
+
+- Every pull request requires at least one review before merge.
+- Review the code, not the person. Feedback must be specific and constructive.
+- If you disagree with a design decision, raise it in PR comments with reasoning. If unresolved after one working day, escalate to a team call.
+- No self-merge of your own PR without review, except for documentation-only changes with time pressure.
+
+### 3.2 Branching and Commits
+
+- Branch from `main` using the convention: `feature/<description>`, `fix/<description>`, `chore/<description>`.
+- Write meaningful commit messages using Conventional Commits format: `feat(auth): add Google OAuth sign-in`.
+- Do not commit directly to `main`. All changes go through a pull request.
+
+### 3.3 File and Secret Hygiene
+
+- Never commit secret files: `.env`, `kaggle.json`, API keys, or database passwords.
+- The `.gitignore` must be respected at all times.
+- Never commit `node_modules/`, `venv/`, `*.pt` model weights over 100 MB, or dataset zip files.
+- If you accidentally expose a credential, rotate it immediately and notify the Start-up Manager.
+
+### 3.4 Author Attribution
+
+All source files must include an author header:
+
+```javascript
+/**
+ * @file Brief description of the file
+ * @author Your Name <your.email@example.com>
+ */
+```
+
+### 3.5 Testing Responsibility
+
+- The author of a feature is responsible for writing its initial tests.
+- No feature is considered complete without at least one passing test covering the happy path.
+- The Quality Manager (Iruwan) performs integration-level QA sign-off before submission.
+
+### 3.6 Documentation
+
+- New API endpoints must be documented in `docs/API_REFERENCE.md` before the PR is merged.
+- New database tables must be documented in `docs/DATABASE_SCHEMA.md`.
+- Any migration step required for a new feature must be captured in the sprint delivery notes.
 
 ---
 
-## 6. Comprehensive Conflict Resolution Matrix
-When conflicts arise—whether they are technical disagreements over PyTorch device deployment or interpersonal clashes—the following escalation matrix must be utilized.
+## 4. Meeting Conduct
 
-### Step 1: Peer-to-Peer Asynchronous Discussion
-- *Trigger:* Initial disagreement (e.g., how to handle `multer` uploads).
-- *Action:* The involved parties discuss the issue publicly in the PR comments or a dedicated Slack thread. Empirical evidence (documentation links, performance benchmarks) must be used. Emotional rhetoric is removed.
-
-### Step 2: Synchronous Team Debugging / Vote
-- *Trigger:* Impasse reached after 24 hours of discussion.
-- *Action:* The issue is moved to the Bi-Weekly Team Sync meeting. Both individuals have 3 minutes to present their architectural argument. The broader assembled team (Quality, Risk, and Project Managers) votes on the path forward. 
-
-### Step 3: Managerial Intervention & HR Escalation
-- *Trigger:* Interpersonal conflict involving violations of the Code of Conduct (e.g., harassment, gatekeeping).
-- *Action:* Incident is reported directly to the Start-Up Manager via direct message. The Start-up Manager acts as a neutral arbiter. If the violation is severe, the offending team member may have their repository access revoked while a formal project reassignment occurs.
+- Arrive on time. If you cannot attend, notify the Scheduling Manager (Kalindu) at least 30 minutes before the meeting.
+- The Scheduling Manager maintains the agenda and distributes it before each meeting.
+- One person speaks at a time. Decisions are documented in the Communication Plan.
+- Action items are assigned a specific owner and deadline before the meeting ends.
 
 ---
 
-## 7. Acknowledgment
-By checking out this repository and executing `npm install` or `pip install -r requirements.txt`, you acknowledge and bind yourself to the expectations laid out in this Master Code of Conduct. We succeed or fail together as the FleetGuard squad.
+## 5. Communication Standards
+
+| Channel | Purpose | Response SLA |
+| --- | --- | --- |
+| Team chat (WhatsApp/Slack) | Daily status updates, quick questions | Within 2 hours during working hours |
+| GitHub PR comments | Code review feedback | Within 1 working day |
+| Email | Formal decisions, milestone sign-offs | Within 4 hours |
+| Video call | Blockers, design decisions, sprint reviews | Scheduled same day for P0 blockers |
+
+### 5.1 Blocker Escalation
+
+A **blocker** is any issue that prevents you from completing your current task.
+
+- Notify the team chat immediately — do not wait for the next scheduled meeting.
+- Describe: what you are trying to do, what is failing, what you have already tried.
+- The Risk Manager (Kalindu) logs the blocker in the Risk Plan and coordinates resolution.
+
+---
+
+## 6. Unacceptable Behaviours
+
+The following are strictly prohibited and will be escalated to the Start-up Manager immediately:
+
+1. **Harassment or intimidation** — of any form, in any channel.
+2. **Knowledge hoarding** — withholding technical context to create dependency or appear indispensable.
+3. **Silent failure** — knowing that a deliverable will be missed and not informing the team in advance.
+4. **Deliberate sabotage** — introducing code that breaks the work of another team member intentionally.
+5. **Ignoring code review feedback** — merging a PR after feedback has been provided and before it has been addressed.
+6. **Security negligence** — committing secrets, credentials, or private keys to the repository.
+
+---
+
+## 7. Conflict Resolution
+
+### Step 1 — Direct Discussion (Technical Disagreements)
+
+Raise the disagreement in the relevant PR thread or team chat with evidence (documentation, benchmarks, test results). Allow 24 hours for asynchronous resolution.
+
+### Step 2 — Team Vote
+
+If unresolved, bring the issue to the next team sync. Both positions are presented in three minutes each. The team votes on the path forward. Majority wins; the outcome is logged.
+
+### Step 3 — Start-up Manager Decision
+
+If the conflict is interpersonal, or if the team is deadlocked on a decision that blocks progress, the Start-up Manager (Bethmi) makes the final call.
+
+---
+
+## 8. Acknowledgement
+
+By contributing to this repository, each team member acknowledges they have read and will abide by this Code of Conduct for the full duration of the FleetGuard AI project.
+
+| Name | Role | Signature |
+| --- | --- | --- |
+| Bethmi Jayamila | Start-up Manager | Bethmi Jayamila |
+| Chathura Bhashitha | Project Manager | Chathura Bhashitha |
+| Kalindu Tharanga | Risk & Scheduling Manager | Kalindu Tharanga |
+| Iruwan Tharaka | Quality Manager | Iruwan Tharaka |
+
+**Date agreed:** Beginning of Sprint 1

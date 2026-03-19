@@ -14,6 +14,12 @@ export default defineConfig({
       reporter: ['text', 'lcov', 'html'],
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/test/**', '**/*.d.ts', '**/*.config.*'],
+      thresholds: {
+        lines:      80,
+        functions:  80,
+        branches:   80,
+        statements: 80,
+      },
     },
   },
   plugins: [

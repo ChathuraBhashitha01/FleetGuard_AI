@@ -36,9 +36,19 @@ import {
   Camera,
   TrendingUp,
   Activity,
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ImageWithFallback } from '@/app/components/figma/ImageWithFallback';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/app/components/ui/dialog';
+import { authService } from '@/services/authService';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -52,6 +62,8 @@ export function DriverProfile() {
     notifications: true,
     locationSharing: true,
   });
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     driverService.getStats().then(setStats).catch(() => {});
@@ -66,7 +78,22 @@ export function DriverProfile() {
     totalInspections: stats.total_inspections ?? 0,
     thisMonthInspections: stats.month_inspections ?? 0,
     avgHealthScore: stats.avg_health_score ?? 0,
-    photoUrl: user?.avatar_url ? `${API_BASE.replace('/api', '')}${user.avatar_url}` : 'https://images.unsplash.com/photo-1649856092331-7d5f879a4f89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTcmklMjBMYW5rYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBkcml2ZXJ8ZW58MXx8fHwxNzY5NDkyMjMyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    photoUrl: user?.avatar_url 
+      ? (user.avatar_url.startsWith('http') ? user.avatar_url : `${API_BASE.replace('/api', '')}${user.avatar_url}`) 
+      : 'https://images.unsplash.com/photo-1649856092331-7d5f879a4f89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTcmklMjBMYW5rYW4lMjBtYW4lMjBwcm9mZXNzaW9uYWwlMjBkcml2ZXJ8ZW58MXx8fHwxNzY5NDkyMjMyfDA&ixlib=rb-4.1.0&q=80&w=1080',
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await authService.deleteAccount();
+      toast.success('Account deleted successfully');
+      navigate('/driver/login');
+    } catch {
+      toast.error('Failed to delete account. Please try again.');
+      setDeleting(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   const handleLogout = () => {
@@ -121,14 +148,20 @@ export function DriverProfile() {
               <div className="flex items-end gap-6">
                 {/* Profile Photo */}
                 <div className="relative group">
-                  <div className="w-28 h-28 rounded-2xl overflow-hidden border border-white/20 backdrop-blur-md bg-white/5">
+                  <div 
+                    className="w-28 h-28 rounded-2xl overflow-hidden border border-white/20 backdrop-blur-md bg-white/5 cursor-pointer"
+                    onClick={() => navigate('/driver/profile/edit')}
+                  >
                     <ImageWithFallback
                       src={driver.photoUrl}
                       alt={driver.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <button className="absolute bottom-0 right-0 w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all">
+                  <button 
+                    className="absolute bottom-0 right-0 w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all cursor-pointer"
+                    onClick={() => navigate('/driver/profile/edit')}
+                  >
                     <Camera className="h-4 w-4 text-white" />
                   </button>
                   <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center animate-pulse">
@@ -301,7 +334,46 @@ export function DriverProfile() {
           <LogOut className="h-5 w-5 mr-2" />
           {t('driverProfile.logout')}
         </Button>
+
+        {/* Delete Account Button */}
+        <Button
+          className="w-full h-12 bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900/30 hover:border-red-500/50 backdrop-blur-md font-semibold"
+          onClick={() => setShowDeleteDialog(true)}
+        >
+          <Trash2 className="h-5 w-5 mr-2" />
+          Delete Account
+        </Button>
       </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="bg-slate-900 border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Delete Account</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              This action is permanent and cannot be undone. Your account, inspection history, and all associated data will be deleted.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {deleting ? 'Deleting...' : 'Yes, Delete My Account'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

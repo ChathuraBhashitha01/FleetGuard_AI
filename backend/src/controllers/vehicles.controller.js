@@ -7,6 +7,7 @@
  */
 
 const Vehicle = require('../models/vehicle.model');
+const { db } = require('../models/index');
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -34,15 +35,20 @@ exports.getOne = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     const { number_plate, make, model, year, color, vehicle_type } = req.body;
-    const vehicle = await Vehicle.create({ number_plate, make, model, year, color, vehicle_type });
+    const photo_url = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const vehicle = await Vehicle.create({ number_plate, make, model, year, color, vehicle_type, photo_url });
     res.status(201).json(vehicle);
   } catch (err) { next(err); }
 };
 
 exports.update = async (req, res, next) => {
   try {
-    const { make, model, year, color, notes } = req.body;
-    const vehicle = await Vehicle.update(req.params.id, { make, model, year, color, notes });
+    const debugData = { id: req.params.id, body: req.body, file: req.file ? req.file.filename : null };
+    require('fs').appendFileSync(require('path').join(__dirname, '../../uploads/debug_log.txt'), JSON.stringify(debugData) + '\n');
+    
+    const { make, model, year, color, notes, vehicle_type } = req.body;
+    const photo_url = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const vehicle = await Vehicle.update(req.params.id, { make, model, year, color, notes, vehicle_type, photo_url });
     if (!vehicle) return res.status(404).json({ error: 'Vehicle not found' });
     res.json(vehicle);
   } catch (err) { next(err); }
@@ -57,4 +63,28 @@ exports.updateStatus = async (req, res, next) => {
     if (!updated) return res.status(404).json({ error: 'Vehicle not found' });
     res.json({ message: 'Status updated', ...updated });
   } catch (err) { next(err); }
+};
+
+exports.remove = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    // Delete related GPS logs
+    await db.query('DELETE FROM gps_logs WHERE vehicle_id=$1', [id]);
+    const inspRes = await db.query('SELECT id FROM inspections WHERE vehicle_id=$1', [id]);
+    const inspIds = inspRes.rows.map(r => r.id);
+
+    if (inspIds.length > 0) {
+      await db.query('DELETE FROM digital_signatures WHERE inspection_id = ANY($1)', [inspIds]);
+      await db.query('DELETE FROM damage_detections WHERE inspection_id = ANY($1)', [inspIds]);
+      await db.query('DELETE FROM inspection_photos WHERE inspection_id = ANY($1)', [inspIds]);
+      await db.query('DELETE FROM inspection_reviews WHERE inspection_id = ANY($1)', [inspIds]);
+      await db.query('DELETE FROM inspections WHERE id = ANY($1)', [inspIds]);
+    }
+
+    const deleted = await Vehicle.remove(id);
+    if (!deleted) return res.status(404).json({ error: 'Vehicle not found' });
+    res.json({ message: 'Vehicle deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
 };

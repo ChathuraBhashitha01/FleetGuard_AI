@@ -36,6 +36,7 @@ export function AddEditVehicle() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [photos, setPhotos] = useState<File[]>([]);
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function AddEditVehicle() {
             mileage: '',
             notes: v.notes ?? '',
           });
+          setCurrentPhotoUrl(v.photo_url ?? null);
         })
         .catch(() => setError('Vehicle not found'))
         .finally(() => setLoading(false));
@@ -65,23 +67,23 @@ export function AddEditVehicle() {
     setSaving(true);
     setError('');
     try {
+      const data = new FormData();
+      data.append('number_plate', formData.vehicleNumber);
+      data.append('make', formData.make);
+      data.append('model', formData.model);
+      if (formData.year) data.append('year', formData.year);
+      if (formData.color) data.append('color', formData.color);
+      data.append('vehicle_type', formData.type.toLowerCase().replace('-', ''));
+      if (formData.notes) data.append('notes', formData.notes);
+      
+      if (photos.length > 0) {
+        data.append('photo', photos[0]); // backend expects single 'photo'
+      }
+
       if (isEdit && vehicleId) {
-        await vehicleService.update(vehicleId, {
-          make: formData.make,
-          model: formData.model,
-          year: formData.year ? Number(formData.year) : undefined,
-          color: formData.color || undefined,
-          notes: formData.notes || undefined,
-        });
+        await vehicleService.update(vehicleId, data);
       } else {
-        await vehicleService.create({
-          number_plate: formData.vehicleNumber,
-          make: formData.make,
-          model: formData.model,
-          year: formData.year ? Number(formData.year) : undefined,
-          color: formData.color || undefined,
-          vehicle_type: formData.type.toLowerCase().replace('-', ''), // Car->car, Tuk-Tuk->tuktuk
-        });
+        await vehicleService.create(data);
       }
       navigate('/manager/fleet');
     } catch (err: any) {
@@ -281,6 +283,25 @@ export function AddEditVehicle() {
                 <p className="mt-3 text-sm text-slate-300">
                   {photos.length} photo{photos.length > 1 ? 's' : ''} selected
                 </p>
+              )}
+              
+              {(currentPhotoUrl || photos.length > 0) && (
+                <div className="mt-4 flex flex-wrap gap-4">
+                  {currentPhotoUrl && photos.length === 0 && (
+                    <div className="relative w-32 h-24 rounded-lg overflow-hidden border border-white/10">
+                      <img 
+                        src={`${(import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '')}${currentPhotoUrl}`} 
+                        alt="Vehicle" 
+                        className="object-cover w-full h-full" 
+                      />
+                    </div>
+                  )}
+                  {photos.map((p, idx) => (
+                    <div key={idx} className="relative w-32 h-24 rounded-lg overflow-hidden border border-white/10">
+                      <img src={URL.createObjectURL(p)} alt="Preview" className="object-cover w-full h-full" />
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>

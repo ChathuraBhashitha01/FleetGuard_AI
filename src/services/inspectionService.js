@@ -17,9 +17,7 @@ export const inspectionService = {
     const form = new FormData();
     form.append('photo', photoFile);
     form.append('photo_type', photoType);
-    return api.post(`/photos/upload/${inspectionId}`, form,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
-    ).then(r => r.data);
+    return api.post(`/photos/upload/${inspectionId}`, form).then(r => r.data);
   },
 
   // Upload all 8 photos in one shot
@@ -28,9 +26,7 @@ export const inspectionService = {
     const form = new FormData();
     photosArr.forEach(f => form.append('photos', f));
     form.append('photo_types', JSON.stringify(typesArr));
-    return api.post(`/photos/upload-batch/${inspectionId}`, form,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
-    ).then(r => r.data);
+    return api.post(`/photos/upload-batch/${inspectionId}`, form).then(r => r.data);
   },
 
   // Upload signature — blob from canvas.toBlob()
@@ -38,9 +34,7 @@ export const inspectionService = {
     const form = new FormData();
     form.append('signature', blob, `sig_${signerType}.png`);
     form.append('signer_type', signerType);
-    return api.post(`/photos/signature/${inspectionId}`, form,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
-    ).then(r => r.data);
+    return api.post(`/photos/signature/${inspectionId}`, form).then(r => r.data);
   },
 
   getPhotos: (inspectionId) => api.get(`/photos/${inspectionId}`).then(r => r.data),

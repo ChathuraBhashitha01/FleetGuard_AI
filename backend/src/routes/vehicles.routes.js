@@ -12,6 +12,7 @@ const ctrl    = require('../controllers/vehicles.controller');
 const mc      = require('../controllers/manager.controller');
 const { verifyToken }  = require('../middleware/auth');
 const { requireRole }  = require('../middleware/roles');
+const upload  = require('../middleware/upload');
 
 router.use(verifyToken);  // all vehicle routes need auth
 
@@ -19,8 +20,9 @@ router.get('/',             ctrl.getAll);
 router.get('/available',    ctrl.getAvailable);
 router.get('/:id/inspection-history', requireRole('manager','admin'), mc.getVehicleInspectionHistory);
 router.get('/:id',          ctrl.getOne);
-router.post('/',            requireRole('manager','admin'), ctrl.create);
-router.put('/:id',          requireRole('manager','admin'), ctrl.update);
+router.post('/',            requireRole('manager','admin'), upload.single('photo'), ctrl.create);
+router.put('/:id',          requireRole('manager','admin'), upload.single('photo'), ctrl.update);
 router.patch('/:id/status', requireRole('manager','admin'), ctrl.updateStatus);
+router.delete('/:id',       requireRole('manager','admin'), ctrl.remove);
 
 module.exports = router;

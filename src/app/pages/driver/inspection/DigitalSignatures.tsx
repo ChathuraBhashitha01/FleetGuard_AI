@@ -123,10 +123,10 @@ export function DigitalSignatures() {
     setGenerating(true);
     try {
       const driverBlob = await new Promise<Blob | null>((res) =>
-        driverPadRef.current!.toBlob((b) => res(b), 'image/png')
+        driverCanvasRef.current!.toBlob((b) => res(b), 'image/png')
       );
       const customerBlob = await new Promise<Blob | null>((res) =>
-        customerPadRef.current!.toBlob((b) => res(b), 'image/png')
+        customerCanvasRef.current!.toBlob((b) => res(b), 'image/png')
       );
       if (!driverBlob || !customerBlob) {
         toast.error('Could not capture signatures');

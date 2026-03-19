@@ -95,7 +95,9 @@ export function DriverDashboard() {
               <div className="relative group">
                 <div className="w-28 h-28 rounded-2xl overflow-hidden border border-white/20 backdrop-blur-md bg-white/5 shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:border-white/40">
                   <ImageWithFallback
-                    src={user?.avatar_url ? `${(import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '')}${user.avatar_url.startsWith('/') ? '' : '/'}${user.avatar_url}` : 'https://images.unsplash.com/photo-1649856092331-7d5f879a4f89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400'}
+                    src={user?.avatar_url 
+                      ? (user.avatar_url.startsWith('http') ? user.avatar_url : `${(import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '')}${user.avatar_url}`) 
+                      : 'https://images.unsplash.com/photo-1649856092331-7d5f879a4f89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=400'}
                     alt={user?.name || 'Driver'}
                     className="w-full h-full object-cover"
                   />
