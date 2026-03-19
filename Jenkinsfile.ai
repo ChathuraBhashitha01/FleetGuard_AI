@@ -170,21 +170,7 @@ pipeline {
             echo "AI service deployment successful: ${env.HEALTH_URL}"
         }
         failure {
-            echo 'Deployment FAILED — rolling back...'
-            sshagent(credentials: ['fleetguard-ssh']) {
-                sh '''
-                    ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
-                        ${DEPLOY_USER}@${DEPLOY_HOST} \
-                    "if [ -f ${BACKUP_DIR}/previous/app.js ]; then \
-                         cp -f ${BACKUP_DIR}/previous/app.js       ${APP_DIR}/; \
-                         cp -f ${BACKUP_DIR}/previous/package.json ${APP_DIR}/ 2>/dev/null || true; \
-                         mkdir -p ${APP_DIR}/tmp && touch ${APP_DIR}/tmp/restart.txt; \
-                         echo 'Rollback complete'; \
-                     else \
-                         echo 'No backup — manual intervention required'; \
-                     fi"
-                '''
-            }
+            echo 'Deployment FAILED — skipping rollback for debug'
         }
         always {
             cleanWs()
