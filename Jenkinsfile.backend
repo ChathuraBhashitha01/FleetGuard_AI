@@ -9,7 +9,6 @@
 //   fleetguard-backend-env    — Secret file: backend/.env for test DB connection
 //   fleetguard-backend-prod   — Secret file: backend/.env for production
 // ─────────────────────────────────────────────────────────────────────────────
-
 pipeline {
     agent any
     tools {
@@ -20,9 +19,9 @@ pipeline {
         DEPLOY_USER  = 'teamforta'
         DEPLOY_HOST  = '109.163.225.82'
         DEPLOY_PORT  = '26'
-        APP_DIR      = '/home/teamforta/domains/api.teamforta.nl/public_html'
+        APP_DIR      = '/home/teamforta/domains/api.fleetguard.com/public_html'
         BACKUP_DIR   = '/home/teamforta/backups/fleetguard-api'
-        NODE_BIN     = '/home/teamforta/nodevenv/domains/api.teamforta.nl/public_html/20/bin'
+        NODE_BIN     = '/home/teamforta/nodevenv/domains/api.fleetguard.com/public_html/20/bin'
         API_URL      = 'https://api.teamforta.nl/api/health'
     }
     options {
@@ -39,7 +38,6 @@ pipeline {
                 checkout scm
             }
         }
-
         stage('Install Dependencies') {
             steps {
                 dir('backend') {
@@ -48,9 +46,8 @@ pipeline {
                 }
             }
         }
-
         stage('Test — 80% Coverage Gate') {
-             steps {
+            steps {
                 dir('backend') {
                     withCredentials([file(credentialsId: 'fleetguard-backend-env', variable: 'ENV_FILE')]) {
                         sh 'cp $ENV_FILE .env'
@@ -68,12 +65,10 @@ pipeline {
                         reportName:  'Backend Coverage Report',
                         keepAll:     true
                     ])
-                    // Remove test .env — never deploy test credentials
                     sh 'rm -f backend/.env'
                 }
             }
         }
-
         stage('Install Linux Binaries') {
             steps {
                 dir('backend') {
@@ -82,7 +77,6 @@ pipeline {
                 }
             }
         }
-
         stage('Package') {
             steps {
                 echo 'Creating deployment package...'
@@ -92,13 +86,11 @@ pipeline {
                         --exclude='.env*' \
                         --exclude='coverage' \
                         --exclude='*.test.js' \
-                        --exclude='backend/node_modules' \
                         backend/ \
                         || { echo "ERROR: tarball not created"; exit 1; }
                 '''
             }
         }
-
         stage('Backup') {
             steps {
                 sshagent(credentials: ['fleetguard-ssh']) {
@@ -120,7 +112,6 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy') {
             steps {
                 sshagent(credentials: ['fleetguard-ssh']) {
@@ -134,22 +125,13 @@ pipeline {
                          tar -xzf deploy.tar.gz --strip-components=1 && \
                          rm deploy.tar.gz"
                     '''
-                    echo 'Installing production dependencies on server...'
-                    sh '''
-                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
-                            ${DEPLOY_USER}@${DEPLOY_HOST} \
-                        "cd ${APP_DIR} && ${NODE_BIN}/npm ci --omit=dev --ignore-scripts"
-                    '''
                     echo 'Injecting production .env...'
-                    // Create credential: Kind=Secret file, ID=fleetguard-backend-prod
-                    // Contents: backend/.env with production DB, JWT_SECRET, SMTP, etc.
                     withCredentials([file(credentialsId: 'fleetguard-backend-prod', variable: 'PROD_ENV')]) {
                         sh 'scp -P ${DEPLOY_PORT} -o StrictHostKeyChecking=no $PROD_ENV ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/.env'
                     }
                 }
             }
         }
-
         stage('Run Migrations') {
             steps {
                 sshagent(credentials: ['fleetguard-ssh']) {
@@ -162,7 +144,6 @@ pipeline {
                 }
             }
         }
-
         stage('Restart App') {
             steps {
                 sshagent(credentials: ['fleetguard-ssh']) {
@@ -174,7 +155,6 @@ pipeline {
                 }
             }
         }
-
         stage('Health Check') {
             steps {
                 echo 'Checking API health...'
@@ -185,7 +165,6 @@ pipeline {
             }
         }
     }
-
     post {
         success {
             echo "Backend API deployment successful: ${env.API_URL}"
@@ -214,4 +193,3 @@ pipeline {
         }
     }
 }
-
