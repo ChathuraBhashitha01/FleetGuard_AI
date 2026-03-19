@@ -111,7 +111,7 @@ app.post('/api/detect', upload.array('images', 8), async (req, res) => {
     if (!req.files || req.files.length === 0) return res.status(400).json({ success: false, error: 'No image uploaded' });
 
     const inspection_id = req.body.inspection_id || 'unknown';
-    const filepath = req.file.path;
+    const filepath = req.files[0].path;
 
     try {
         let isDamaged = true;
@@ -158,7 +158,11 @@ app.post('/api/detect', upload.array('images', 8), async (req, res) => {
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     } finally {
-        if (fs.existsSync(filepath)) fs.unlinkSync(filepath); 
+        if (req.files) {
+            req.files.forEach(f => {
+                if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+            });
+        }
     }
 });
 
