@@ -107,8 +107,8 @@ app.get('/api/health', (req, res) => {
     res.json({ status: "healthy", service: "FleetGuard AI Service (TFJS Pure In-Memory)" });
 });
 
-app.post('/api/detect', upload.single('images'), async (req, res) => {
-    if (!req.file) return res.status(400).json({ success: false, error: 'No image uploaded' });
+app.post('/api/detect', upload.array('images', 8), async (req, res) => {
+    if (!req.files || req.files.length === 0) return res.status(400).json({ success: false, error: 'No image uploaded' });
 
     const inspection_id = req.body.inspection_id || 'unknown';
     const filepath = req.file.path;
