@@ -53,11 +53,6 @@ pipeline {
         }
 
         stage('Smoke Test') {
-            // No automated test suite exists yet for the AI service.
-            // This stage verifies the app.js loads without syntax errors
-            // and the health endpoint is exported correctly.
-            // TODO: add jest tests for /api/detect and /api/health, then
-            //       replace this with: npm test && enforce 80% coverage.
             steps {
                 dir('fleetguard-ai-service') {
                     echo 'Running syntax smoke test...'
@@ -70,7 +65,6 @@ pipeline {
             steps {
                 dir('fleetguard-ai-service') {
                     echo 'Installing Linux-specific optional packages...'
-                    // TensorFlow.js needs platform-specific native bindings on Linux
                     sh 'npm install --ignore-scripts --os=linux --cpu=x64 @tensorflow/tfjs-node || true'
                     sh 'npm install --ignore-scripts --os=linux --cpu=x64 @parcel/watcher-linux-x64-glibc || true'
                 }
@@ -89,7 +83,6 @@ pipeline {
                         --exclude='fleetguard-ai-service/dataset' \
                         --exclude='fleetguard-ai-service/dataset.zip' \
                         --exclude='fleetguard-ai-service/runs' \
-                        --exclude='fleetguard-ai-service/node_modules' \
                         --exclude='fleetguard-ai-service/project_management_docs' \
                         fleetguard-ai-service/ \
                         || { echo "ERROR: tarball not created"; exit 1; }
@@ -131,12 +124,6 @@ pipeline {
                          tar -xzf deploy.tar.gz --strip-components=1 && \
                          rm deploy.tar.gz"
                     '''
-                    echo 'Installing production dependencies on server...'
-                    sh '''
-                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
-                            ${DEPLOY_USER}@${DEPLOY_HOST} \
-                        "cd ${APP_DIR} && ${NODE_BIN}/npm ci --omit=dev --ignore-scripts"
-                    '''
                 }
             }
         }
@@ -156,7 +143,6 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo 'Checking AI service health...'
-                // /api/health returns {"status":"healthy","service":"FleetGuard AI Service..."}
                 retry(4) {
                     sleep(time: 20, unit: 'SECONDS')
                     sh 'curl -k -f -s -o /dev/null --max-time 60 ${HEALTH_URL} && echo "Health check passed"'
@@ -170,7 +156,21 @@ pipeline {
             echo "AI service deployment successful: ${env.HEALTH_URL}"
         }
         failure {
-            echo 'Deployment FAILED — skipping rollback for debug'
+            echo 'Deployment FAILED — rolling back...'
+            sshagent(credentials: ['fleetguard-ssh']) {
+                sh '''
+                    ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                        ${DEPLOY_USER}@${DEPLOY_HOST} \
+                    "if [ -f ${BACKUP_DIR}/previous/app.js ]; then \
+                         cp -f ${BACKUP_DIR}/previous/app.js       ${APP_DIR}/; \
+                         cp -f ${BACKUP_DIR}/previous/package.json ${APP_DIR}/ 2>/dev/null || true; \
+                         mkdir -p ${APP_DIR}/tmp && touch ${APP_DIR}/tmp/restart.txt; \
+                         echo 'Rollback complete'; \
+                     else \
+                         echo 'No backup — manual intervention required'; \
+                     fi"
+                '''
+            }
         }
         always {
             cleanWs()
