@@ -94,8 +94,7 @@ async function loadDataAndTrain() {
         if (!fs.existsSync(classDir)) continue;
 
         const files = fs.readdirSync(classDir).filter(f => f.match(/\.(jpg|jpeg)$/i));
-        const sampleSize = Math.min(files.length, 10); 
-        
+        const sampleSize = Math.min(files.length, 30); // Use 30 images for quick pure-JS training on Node
         for (let i = 0; i < sampleSize; i++) {
             try {
                 const normalized = decodeImage(path.join(classDir, files[i]));
