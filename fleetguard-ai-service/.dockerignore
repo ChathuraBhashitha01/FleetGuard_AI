@@ -1,0 +1,9 @@
+# Ignore heavy files inside the AI service folder
+venv/
+venv2/
+node_modules/
+dataset/
+dataset.zip
+test_model/
+*.log
+uploads/
