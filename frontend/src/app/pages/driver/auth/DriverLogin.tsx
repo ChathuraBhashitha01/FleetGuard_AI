@@ -211,7 +211,7 @@ export function DriverLogin() {
                 </div>
 
                 {/* Google Sign In */}
-                <div className="w-full flex justify-center [&>div]:w-full">
+                <div className="w-full flex justify-center  ">
                   <GoogleLogin
                     onSuccess={async (credentialResponse) => {
                       if (credentialResponse.credential) {
@@ -229,9 +229,9 @@ export function DriverLogin() {
                       }
                     }}
                     onError={() => setError('Google Authentication Failed')}
-                    width="100%"
-                    theme="filled_blue"
-                    shape="circle"
+                    
+                    theme="outline"
+                    shape="pill"
                   />
                 </div>
               </form>
