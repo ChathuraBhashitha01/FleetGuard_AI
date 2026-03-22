@@ -19,7 +19,7 @@ app.use(cors());
 
 const upload = multer({ dest: 'uploads/' });
 
-const DATASET_PATH = path.join(__dirname, 'dataset', 'data1a', 'training');
+const DATASET_PATH = path.join(__dirname, 'dataset', 'data1a', 'train');
 const IMG_SIZE = 128;
 let model = null;
 let STUB_MODE = false;
@@ -45,6 +45,44 @@ function decodeImage(filePath) {
     return normalized;
 }
 
+const MODEL_DIR = path.join(__dirname, 'model_weights');
+
+const saveHandler = {
+    save: async (modelArtifacts) => {
+        if (!fs.existsSync(MODEL_DIR)) fs.mkdirSync(MODEL_DIR);
+        const modelJSON = {
+            modelTopology: modelArtifacts.modelTopology,
+            format: modelArtifacts.format,
+            generatedBy: modelArtifacts.generatedBy,
+            convertedBy: modelArtifacts.convertedBy,
+            weightsManifest: [{
+                paths: ['./weights.bin'],
+                weights: modelArtifacts.weightSpecs
+            }]
+        };
+        fs.writeFileSync(path.join(MODEL_DIR, 'model.json'), JSON.stringify(modelJSON, null, 2));
+        if (modelArtifacts.weightData) {
+            fs.writeFileSync(path.join(MODEL_DIR, 'weights.bin'), Buffer.from(modelArtifacts.weightData));
+        }
+        return { modelArtifactsInfo: { dateSaved: new Date(), modelTopologyType: 'JSON' } };
+    }
+};
+
+const loadHandler = {
+    load: async () => {
+        const jsonPath = path.join(MODEL_DIR, 'model.json');
+        const modelJSON = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        const weightManifest = modelJSON.weightsManifest[0];
+        
+        const buf = Buffer.concat(weightManifest.paths.map(f => fs.readFileSync(path.join(MODEL_DIR, f))));
+        return {
+            modelTopology: modelJSON.modelTopology,
+            weightSpecs: weightManifest.weights,
+            weightData: buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
+        };
+    }
+};
+
 async function loadDataAndTrain() {
     console.log("Loading dataset to train model in memory...");
     const classes = ['01-whole', '00-damage']; 
@@ -56,11 +94,9 @@ async function loadDataAndTrain() {
         if (!fs.existsSync(classDir)) continue;
 
         const files = fs.readdirSync(classDir).filter(f => f.match(/\.(jpg|jpeg)$/i));
-        const sampleSize = Math.min(files.length, 10); // Quick real-data subset
-        
+        const sampleSize = Math.min(files.length, 30); // Use 30 images for quick pure-JS training on Node
         for (let i = 0; i < sampleSize; i++) {
             try {
-                // Remove batch dim for stack
                 const normalized = decodeImage(path.join(classDir, files[i]));
                 images.push(normalized.squeeze()); 
                 labels.push(c);
@@ -78,40 +114,52 @@ async function loadDataAndTrain() {
     const yTrain = tf.tensor1d(labels, 'int32');
     const yTrainOneHot = tf.oneHot(yTrain, classes.length);
 
-    console.log("Building model...");
     const newModel = tf.sequential();
     newModel.add(tf.layers.flatten({ inputShape: [IMG_SIZE, IMG_SIZE, 3] }));
     newModel.add(tf.layers.dense({ units: 16, activation: 'relu' }));
     newModel.add(tf.layers.dense({ units: 2, activation: 'softmax' })); 
-    
     newModel.compile({ optimizer: 'adam', loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
 
-    console.log("Training model on real data...");
-    await newModel.fit(xTrain, yTrainOneHot, {
-        epochs: 1,
-        batchSize: 16,
-        shuffle: true
-    });
-    
+    console.log("Training model in memory...");
+    await newModel.fit(xTrain, yTrainOneHot, { epochs: 1, batchSize: 16, shuffle: true });
     model = newModel;
-    console.log("Model successfully trained and loaded in memory!");
+
+    try {
+        await model.save(saveHandler);
+        console.log("Model weights saved to model_weights/ on disk!");
+    } catch (err) {
+        console.error("Failed to save model:", err.message);
+    }
     
-    // Cleanup
     tf.dispose([xTrain, yTrain, yTrainOneHot]);
     images.forEach(t => t.dispose());
 }
 
-loadDataAndTrain();
+(async () => {
+    const jsonPath = path.join(MODEL_DIR, 'model.json');
+    if (fs.existsSync(jsonPath)) {
+        console.log("Loading pre-trained model weights from disk...");
+        try {
+            model = await tf.loadLayersModel(loadHandler);
+            console.log("Model loaded successfully from disk. (Stub: OFF)");
+        } catch (err) {
+            console.error("Failed to load model from disk:", err.message);
+            await loadDataAndTrain();
+        }
+    } else {
+        await loadDataAndTrain();
+    }
+})();
 
 app.get('/api/health', (req, res) => {
     res.json({ status: "healthy", service: "FleetGuard AI Service (TFJS Pure In-Memory)" });
 });
 
-app.post('/api/detect', upload.single('images'), async (req, res) => {
-    if (!req.file) return res.status(400).json({ success: false, error: 'No image uploaded' });
+app.post('/api/detect', upload.array('images', 8), async (req, res) => {
+    if (!req.files || req.files.length === 0) return res.status(400).json({ success: false, error: 'No image uploaded' });
 
     const inspection_id = req.body.inspection_id || 'unknown';
-    const filepath = req.file.path;
+    const filepath = req.files[0].path;
 
     try {
         let isDamaged = true;
@@ -158,7 +206,11 @@ app.post('/api/detect', upload.single('images'), async (req, res) => {
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
     } finally {
-        if (fs.existsSync(filepath)) fs.unlinkSync(filepath); 
+        if (req.files) {
+            req.files.forEach(f => {
+                if (fs.existsSync(f.path)) fs.unlinkSync(f.path);
+            });
+        }
     }
 });
 

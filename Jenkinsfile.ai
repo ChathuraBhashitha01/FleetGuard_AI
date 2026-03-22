@@ -1,0 +1,179 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// FleetGuard AI — AI Microservice (TensorFlow.js / Express) — Jenkins Pipeline
+// Deploys to: https://micro.teamforta.nl
+// DirectAdmin user: teamforta | Server: 109.163.225.82 | SSH port: 26
+//
+// Jenkins credentials required (Manage Jenkins > Credentials > global):
+//   fleetguard-ssh       — SSH Username with private key (user: teamforta)
+//   github-credentials   — Username with password (GitHub PAT)
+//
+// DirectAdmin Node.js App settings for micro.teamforta.nl:
+//   Application Startup File: app.js
+//   Node.js Version: 20.x
+//   Application Mode: Production
+// ─────────────────────────────────────────────────────────────────────────────
+
+pipeline {
+    agent any
+    tools {
+        nodejs 'Node-20'
+    }
+    environment {
+        APP_NAME     = 'fleetguard-ai'
+        DEPLOY_USER  = 'teamforta'
+        DEPLOY_HOST  = '109.163.225.82'
+        DEPLOY_PORT  = '26'
+        APP_DIR      = '/home/teamforta/domains/micro.teamforta.nl/public_html'
+        BACKUP_DIR   = '/home/teamforta/backups/fleetguard-ai'
+        NODE_BIN     = '/home/teamforta/nodevenv/domains/micro.teamforta.nl/public_html/20/bin'
+        HEALTH_URL   = 'https://micro.teamforta.nl/api/health'
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '10'))
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    triggers {
+        githubPush()
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out main branch...'
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('fleetguard-ai-service') {
+                    echo 'Installing AI service dependencies...'
+                    sh 'npm ci --ignore-scripts'
+                }
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                dir('fleetguard-ai-service') {
+                    echo 'Running syntax smoke test...'
+                    sh 'node --check app.js && echo "Syntax OK"'
+                }
+            }
+        }
+
+        stage('Install Linux Binaries') {
+            steps {
+                dir('fleetguard-ai-service') {
+                    echo 'Installing Linux-specific optional packages...'
+                    sh 'npm install --ignore-scripts --os=linux --cpu=x64 @tensorflow/tfjs-node || true'
+                    sh 'npm install --ignore-scripts --os=linux --cpu=x64 @parcel/watcher-linux-x64-glibc || true'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                echo 'Creating deployment package...'
+                sh '''
+                    tar -czf deploy.tar.gz \
+                        --exclude='.git' \
+                        --exclude='.env*' \
+                        --exclude='fleetguard-ai-service/venv' \
+                        --exclude='fleetguard-ai-service/venv2' \
+                        --exclude='fleetguard-ai-service/dataset' \
+                        --exclude='fleetguard-ai-service/dataset.zip' \
+                        --exclude='fleetguard-ai-service/runs' \
+                        --exclude='fleetguard-ai-service/project_management_docs' \
+                        fleetguard-ai-service/ \
+                        || { echo "ERROR: tarball not created"; exit 1; }
+                '''
+            }
+        }
+
+        stage('Backup') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "mkdir -p ${BACKUP_DIR}/previous && \
+                         if [ -f ${APP_DIR}/app.js ]; then \
+                             rm -rf ${BACKUP_DIR}/previous && \
+                             mkdir -p ${BACKUP_DIR}/previous && \
+                             cp -f ${APP_DIR}/app.js       ${BACKUP_DIR}/previous/ 2>/dev/null || true && \
+                             cp -f ${APP_DIR}/package.json ${BACKUP_DIR}/previous/ 2>/dev/null || true && \
+                             echo 'Backup created'; \
+                         else \
+                             echo 'No existing deployment to back up'; \
+                         fi"
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    echo 'Uploading package...'
+                    sh 'scp -P ${DEPLOY_PORT} -o StrictHostKeyChecking=no deploy.tar.gz ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/'
+                    echo 'Extracting on server...'
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd ${APP_DIR} && \
+                         tar -xzf deploy.tar.gz --strip-components=1 && \
+                         rm deploy.tar.gz"
+                    '''
+                }
+            }
+        }
+
+        stage('Restart App') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "mkdir -p ${APP_DIR}/tmp && touch ${APP_DIR}/tmp/restart.txt"
+                    '''
+                }
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                echo 'Checking AI service health...'
+                retry(4) {
+                    sleep(time: 20, unit: 'SECONDS')
+                    sh 'curl -k -f -s -o /dev/null --max-time 60 ${HEALTH_URL} && echo "Health check passed"'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "AI service deployment successful: ${env.HEALTH_URL}"
+        }
+        failure {
+            echo 'Deployment FAILED — rolling back...'
+            sshagent(credentials: ['fleetguard-ssh']) {
+                sh '''
+                    ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                        ${DEPLOY_USER}@${DEPLOY_HOST} \
+                    "if [ -f ${BACKUP_DIR}/previous/app.js ]; then \
+                         cp -f ${BACKUP_DIR}/previous/app.js       ${APP_DIR}/; \
+                         cp -f ${BACKUP_DIR}/previous/package.json ${APP_DIR}/ 2>/dev/null || true; \
+                         mkdir -p ${APP_DIR}/tmp && touch ${APP_DIR}/tmp/restart.txt; \
+                         echo 'Rollback complete'; \
+                     else \
+                         echo 'No backup — manual intervention required'; \
+                     fi"
+                '''
+            }
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

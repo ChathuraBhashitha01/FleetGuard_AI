@@ -19,7 +19,8 @@ const errorHandler     = require('./middleware/errorHandler');
 const app = express();
 
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }
 }));
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',

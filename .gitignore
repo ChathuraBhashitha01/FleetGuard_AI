@@ -11,6 +11,9 @@ package-lock.json
 .env.test.local
 .env.production.local
 backend/.env
+backend/.env.test
+backend/.env.production
+.claude/
 
 # IDE
 .vscode/
@@ -61,3 +64,5 @@ runs/
 
 # Temp Images
 *.jpg
+
+

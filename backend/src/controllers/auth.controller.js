@@ -79,7 +79,7 @@ exports.login = async (req, res, next) => {
 // ─── GOOGLE OAUTH ────────────────────────────────────────────
 exports.googleLogin = async (req, res, next) => {
   try {
-    const { idToken } = req.body;
+    const { idToken, role: requestedRole } = req.body;
     const ticket  = await googleClient.verifyIdToken({
       idToken, audience: process.env.GOOGLE_CLIENT_ID
     });
@@ -91,15 +91,25 @@ exports.googleLogin = async (req, res, next) => {
     let user = result.rows[0];
 
     if (!user) {
+      const newRole = requestedRole === 'manager' ? 'manager' : 'driver';
       const ins = await pool.query(
         `INSERT INTO users (name,email,google_id,avatar_url,role)
-         VALUES ($1,$2,$3,$4,'driver') RETURNING *`,
-        [name, email, googleId, picture]
+         VALUES ($1,$2,$3,$4,$5) RETURNING *`,
+        [name, email, googleId, picture, newRole]
       );
       user = ins.rows[0];
-      await pool.query('INSERT INTO drivers (user_id) VALUES ($1)', [user.id]);
-    } else if (!user.google_id) {
-      await pool.query('UPDATE users SET google_id=$1 WHERE id=$2', [googleId, user.id]);
+      if (newRole === 'driver') {
+        await pool.query('INSERT INTO drivers (user_id) VALUES ($1)', [user.id]);
+      } else {
+        await pool.query('INSERT INTO managers (user_id) VALUES ($1)', [user.id]);
+      }
+    } else {
+      if (!user.google_id) {
+        await pool.query('UPDATE users SET google_id=$1 WHERE id=$2', [googleId, user.id]);
+      }
+      if (requestedRole === 'manager' && user.role !== 'manager') {
+        return res.status(403).json({ error: 'This Google account is registered as a driver. Please use a manager account.' });
+      }
     }
 
     const { password_hash, ...safeUser } = user;
@@ -149,6 +159,14 @@ exports.resetPassword = async (req, res, next) => {
       [result.rows[0].id]);
 
     res.json({ message: 'Password updated successfully' });
+  } catch (err) { next(err); }
+};
+
+// ─── DELETE ACCOUNT ──────────────────────────────────────────
+exports.deleteAccount = async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM users WHERE id=$1', [req.user.id]);
+    res.json({ message: 'Account deleted successfully' });
   } catch (err) { next(err); }
 };
 

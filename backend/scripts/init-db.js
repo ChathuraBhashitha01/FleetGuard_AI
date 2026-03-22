@@ -70,9 +70,16 @@ async function main() {
   const schemaClient = new Client({ ...baseConfig, database: DB_NAME });
   try {
     await schemaClient.connect();
-    const sql = fs.readFileSync(schemaPath, 'utf8');
-    await schemaClient.query(sql);
-    console.log('Schema applied successfully.');
+    const checkTables = await schemaClient.query(
+      "SELECT 1 FROM information_schema.tables WHERE table_name = 'users'"
+    );
+    if (checkTables.rows.length === 0) {
+      const sql = fs.readFileSync(schemaPath, 'utf8');
+      await schemaClient.query(sql);
+      console.log('Schema applied successfully.');
+    } else {
+      console.log('Schema already applied (users table exists), skipping.');
+    }
   } catch (e) {
     console.error('Schema apply failed:', e.message);
     process.exit(1);

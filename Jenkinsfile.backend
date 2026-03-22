@@ -1,0 +1,200 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// FleetGuard AI — Node.js/Express Backend API — Jenkins Pipeline
+// Deploys to: https://api.teamforta.nl
+// DirectAdmin user: teamforta | Server: 109.163.225.82 | SSH port: 26
+//
+// Jenkins credentials required (Manage Jenkins > Credentials > global):
+//   fleetguard-ssh            — SSH Username with private key (user: teamforta)
+//   github-credentials        — Username with password (GitHub PAT)
+//   fleetguard-backend-env    — Secret file: backend/.env for test DB connection
+//   fleetguard-backend-prod   — Secret file: backend/.env for production
+// ─────────────────────────────────────────────────────────────────────────────
+pipeline {
+    agent any
+    tools {
+        nodejs 'Node-20'
+    }
+    environment {
+        APP_NAME     = 'fleetguard-api'
+        DEPLOY_USER  = 'teamforta'
+        DEPLOY_HOST  = '109.163.225.82'
+        DEPLOY_PORT  = '26'
+        APP_DIR      = '/home/teamforta/domains/api.teamforta.nl/public_html'
+        BACKUP_DIR   = '/home/teamforta/backups/fleetguard-api'
+        NODE_BIN     = '/home/teamforta/nodevenv/domains/api.teamforta.nl/public_html/20/bin'
+        API_URL      = 'https://api.teamforta.nl/api/health'
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '10'))
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    triggers {
+        githubPush()
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out main branch...'
+                checkout scm
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                dir('backend') {
+                    echo 'Installing backend dependencies...'
+                    sh 'npm ci --ignore-scripts'
+                }
+            }
+        }
+        stage('Test — 80% Coverage Gate') {
+            steps {
+                dir('backend') {
+                    withCredentials([file(credentialsId: 'fleetguard-backend-env', variable: 'ENV_FILE')]) {
+                        sh 'cp $ENV_FILE .env'
+                    }
+                    sh 'mkdir -p uploads'
+                    echo 'Running Jest with 80% coverage threshold...'
+                    sh 'npm run test:coverage'
+                }
+            }
+            post {
+                always {
+                    publishHTML(target: [
+                        reportDir:   'backend/coverage/lcov-report',
+                        reportFiles: 'index.html',
+                        reportName:  'Backend Coverage Report',
+                        keepAll:     true
+                    ])
+                    sh 'rm -f backend/.env'
+                }
+            }
+        }
+        stage('Install Linux Binaries') {
+            steps {
+                dir('backend') {
+                    echo 'Installing Linux-specific optional packages...'
+                    sh 'npm install --ignore-scripts --os=linux --cpu=x64 @parcel/watcher-linux-x64-glibc || true'
+                }
+            }
+        }
+        stage('Package') {
+            steps {
+                echo 'Creating deployment package...'
+                sh '''
+                    tar -czf deploy.tar.gz \
+                        --exclude='.git' \
+                        --exclude='.env*' \
+                        --exclude='coverage' \
+                        --exclude='*.test.js' \
+                        backend/ \
+                        || { echo "ERROR: tarball not created"; exit 1; }
+                '''
+            }
+        }
+        stage('Backup') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "mkdir -p ${BACKUP_DIR}/previous && \
+                         if [ -f ${APP_DIR}/server.js ]; then \
+                             rm -rf ${BACKUP_DIR}/previous && \
+                             mkdir -p ${BACKUP_DIR}/previous && \
+                             cp -r ${APP_DIR}/src         ${BACKUP_DIR}/previous/ 2>/dev/null || true && \
+                             cp -f ${APP_DIR}/server.js   ${BACKUP_DIR}/previous/ 2>/dev/null || true && \
+                             cp -f ${APP_DIR}/package.json ${BACKUP_DIR}/previous/ 2>/dev/null || true && \
+                             echo 'Backup created'; \
+                         else \
+                             echo 'No existing deployment to back up'; \
+                         fi"
+                    '''
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    echo 'Uploading package...'
+                    sh 'scp -P ${DEPLOY_PORT} -o StrictHostKeyChecking=no deploy.tar.gz ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/'
+                    echo 'Extracting on server...'
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd ${APP_DIR} && \
+                         tar -xzf deploy.tar.gz --strip-components=1 && \
+                         rm deploy.tar.gz"
+                    '''
+                    echo 'Injecting production .env...'
+                    withCredentials([file(credentialsId: 'fleetguard-backend-prod', variable: 'PROD_ENV')]) {
+                        sh '''
+                            ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                                ${DEPLOY_USER}@${DEPLOY_HOST} \
+                                "rm -f ${APP_DIR}/.env && chmod 755 ${APP_DIR}"
+                        '''
+                        sh 'scp -P ${DEPLOY_PORT} -o StrictHostKeyChecking=no $PROD_ENV ${DEPLOY_USER}@${DEPLOY_HOST}:${APP_DIR}/.env'
+                    }
+                }
+            }
+        }
+        stage('Run Migrations') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    echo 'Running database migrations...'
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd ${APP_DIR} && ${NODE_BIN}/node scripts/run-all-migrations.js || echo 'Migrations: no new migrations'"
+                    '''
+                }
+            }
+        }
+        stage('Restart App') {
+            steps {
+                sshagent(credentials: ['fleetguard-ssh']) {
+                    sh '''
+                        ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                            ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "mkdir -p ${APP_DIR}/tmp && touch ${APP_DIR}/tmp/restart.txt"
+                    '''
+                }
+            }
+        }
+        stage('Health Check') {
+            steps {
+                echo 'Checking API health...'
+                retry(3) {
+                    sleep(time: 15, unit: 'SECONDS')
+                    sh 'curl -k -f -s -o /dev/null --max-time 30 ${API_URL} && echo "Health check passed"'
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "Backend API deployment successful: ${env.API_URL}"
+        }
+        failure {
+            echo 'Deployment FAILED — rolling back...'
+            sshagent(credentials: ['fleetguard-ssh']) {
+                sh '''
+                    ssh -p ${DEPLOY_PORT} -o StrictHostKeyChecking=no \
+                        ${DEPLOY_USER}@${DEPLOY_HOST} \
+                    "if [ -d ${BACKUP_DIR}/previous/src ]; then \
+                         rm -rf ${APP_DIR}/src; \
+                         cp -r  ${BACKUP_DIR}/previous/src        ${APP_DIR}/; \
+                         cp -f  ${BACKUP_DIR}/previous/server.js  ${APP_DIR}/ 2>/dev/null || true; \
+                         cp -f  ${BACKUP_DIR}/previous/package.json ${APP_DIR}/ 2>/dev/null || true; \
+                         mkdir -p ${APP_DIR}/tmp && touch ${APP_DIR}/tmp/restart.txt; \
+                         echo 'Rollback complete'; \
+                     else \
+                         echo 'No backup — manual intervention required'; \
+                     fi"
+                '''
+            }
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

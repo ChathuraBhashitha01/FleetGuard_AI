@@ -32,5 +32,6 @@ router.post('/reset-password',   [
 ], ctrl.resetPassword);
 
 router.get('/me', verifyToken, ctrl.getMe);
+router.delete('/account', verifyToken, ctrl.deleteAccount);
 
 module.exports = router;

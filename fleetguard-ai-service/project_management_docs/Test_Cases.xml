@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestSuite>
+
+  <!-- ============================================================ -->
+  <!-- PROJECT HEADER                                               -->
+  <!-- ============================================================ -->
+  <ProjectInfo>
+    <ProjectName>FleetGuard AI – AI-Powered Vehicle Inspection and Fleet Management System</ProjectName>
+    <CreatedBy>Iruwan Tharaka (Quality Manager)</CreatedBy>
+    <CreatedDate>13/02/2026</CreatedDate>
+    <DateOfReview></DateOfReview>
+  </ProjectInfo>
+
+  <!-- ============================================================ -->
+  <!-- MODULE 1: AUTHENTICATION                                     -->
+  <!-- ============================================================ -->
+  <Module name="Authentication">
+
+    <!-- SCENARIO: Validate Register Page -->
+    <TestScenario name="Validate Register Page">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Register Button</TestCaseName>
+        <TestSteps>
+          <Step>1. Click the 'Register' button on the landing page.</Step>
+        </TestSteps>
+        <TestData>URL</TestData>
+        <ExpectedResult>User should be directed to the Register page.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Default State of Input Fields</TestCaseName>
+        <TestSteps>
+          <Step>1. Open the registration page.</Step>
+          <Step>2. Observe the Name, Email, and Password fields.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>All fields should be empty by default.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Input Field Placeholders</TestCaseName>
+        <TestSteps>
+          <Step>1. Click on each input field.</Step>
+          <Step>2. Check if the placeholders disappear when typing.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>Placeholders should be visible initially but disappear when the user starts typing.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Sign Up with Valid Credentials</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter full name.</Step>
+          <Step>2. Enter a valid email address.</Step>
+          <Step>3. Enter a password meeting requirements (min 8 chars, uppercase, number, symbol).</Step>
+          <Step>4. Select role as 'Driver'.</Step>
+          <Step>5. Click the 'Continue' button.</Step>
+        </TestSteps>
+        <TestData>Full name, Valid Email, Valid Password</TestData>
+        <ExpectedResult>User should be registered successfully and navigated to the driver dashboard.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify Sign Up with Invalid Credentials</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter full name.</Step>
+          <Step>2. Enter an invalid email (e.g. missing @ symbol).</Step>
+          <Step>3. Enter a weak password.</Step>
+          <Step>4. Click the 'Continue' button.</Step>
+        </TestSteps>
+        <TestData>Full name, Invalid Email, Invalid Password</TestData>
+        <ExpectedResult>User should receive an error message: 'Please enter a valid email address.'</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-006">
+        <TestCaseName>Verify Error Message for Missing Fields</TestCaseName>
+        <TestSteps>
+          <Step>1. Leave all fields empty.</Step>
+          <Step>2. Click the 'Continue' button.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>User should receive an error message prompting them to fill in all required fields.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-007">
+        <TestCaseName>Verify Duplicate Email Registration</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter a name.</Step>
+          <Step>2. Enter an email address already registered in the system.</Step>
+          <Step>3. Enter a valid password.</Step>
+          <Step>4. Click the 'Continue' button.</Step>
+        </TestSteps>
+        <TestData>Existing Email, Valid Password</TestData>
+        <ExpectedResult>System returns HTTP 409 Conflict. Error message: 'Email address already registered.'</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Login Page -->
+    <TestScenario name="Validate Login Page">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Login Button</TestCaseName>
+        <TestSteps>
+          <Step>1. Navigate to the application URL.</Step>
+          <Step>2. Click the 'Login' button.</Step>
+        </TestSteps>
+        <TestData>URL</TestData>
+        <ExpectedResult>User should be directed to the login page successfully.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Default State of Input Fields</TestCaseName>
+        <TestSteps>
+          <Step>1. Open the login page.</Step>
+          <Step>2. Observe the Email and Password fields.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>Both fields should be empty by default.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Input Field Placeholders</TestCaseName>
+        <TestSteps>
+          <Step>1. Click on each input field.</Step>
+          <Step>2. Check if placeholders 'Email' and 'Password' disappear when typing.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>Placeholders should be visible initially but disappear when the user starts typing.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Logging in with Valid Credentials</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter a valid registered email address.</Step>
+          <Step>2. Enter the correct password.</Step>
+          <Step>3. Click the 'Login' button.</Step>
+        </TestSteps>
+        <TestData>Valid Email, Valid Password</TestData>
+        <ExpectedResult>User should log in successfully and be redirected to their role dashboard (driver or manager).</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify Logging in with Invalid Credentials</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter an invalid email address.</Step>
+          <Step>2. Enter an incorrect password.</Step>
+          <Step>3. Click the 'Login' button.</Step>
+        </TestSteps>
+        <TestData>Invalid Email, Invalid Password</TestData>
+        <ExpectedResult>System returns HTTP 401. Error message: 'Invalid credentials.'</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-006">
+        <TestCaseName>Verify Error Message for Missing Fields</TestCaseName>
+        <TestSteps>
+          <Step>1. Leave both fields empty.</Step>
+          <Step>2. Click the 'Login' button.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>User should receive an error message prompting them to enter the required fields.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-007">
+        <TestCaseName>Verify Forgot Password Link</TestCaseName>
+        <TestSteps>
+          <Step>1. Click the 'Forgot Password' link on the login page.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>User should be redirected to the Forgot Password page.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-008">
+        <TestCaseName>Verify JWT Token Issued on Successful Login</TestCaseName>
+        <TestSteps>
+          <Step>1. Login with valid credentials.</Step>
+          <Step>2. Inspect browser localStorage.</Step>
+        </TestSteps>
+        <TestData>Valid Email, Valid Password</TestData>
+        <ExpectedResult>A JWT token should be stored in localStorage after successful login.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Forgot Password -->
+    <TestScenario name="Validate Forgot Password">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Forgot Password Navigation</TestCaseName>
+        <TestSteps>
+          <Step>1. Click 'Forgot Password' on the login page.</Step>
+        </TestSteps>
+        <TestData>URL</TestData>
+        <ExpectedResult>User should be redirected to the Forgot Password page.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Reset Email Sent for Registered Email</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter a registered email address in the Forgot Password field.</Step>
+          <Step>2. Click 'Send Reset Link'.</Step>
+        </TestSteps>
+        <TestData>Registered Email</TestData>
+        <ExpectedResult>Success message: 'Password reset email sent.' Email received with reset link.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Reset Email Not Sent for Unregistered Email</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter an email address not registered in the system.</Step>
+          <Step>2. Click 'Send Reset Link'.</Step>
+        </TestSteps>
+        <TestData>Unregistered Email</TestData>
+        <ExpectedResult>System returns an appropriate error. No email is sent.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Password Reset with Valid Token</TestCaseName>
+        <TestSteps>
+          <Step>1. Open the reset link from the email.</Step>
+          <Step>2. Enter a new valid password.</Step>
+          <Step>3. Click 'Reset Password'.</Step>
+          <Step>4. Login with the new password.</Step>
+        </TestSteps>
+        <TestData>Valid Reset Token, New Password</TestData>
+        <ExpectedResult>Password is updated. User can log in successfully with the new password.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify Expired Reset Token is Rejected</TestCaseName>
+        <TestSteps>
+          <Step>1. Open a password reset link that is older than 1 hour.</Step>
+          <Step>2. Enter a new password and submit.</Step>
+        </TestSteps>
+        <TestData>Expired Reset Token</TestData>
+        <ExpectedResult>System returns an error: 'Reset link has expired. Please request a new one.'</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Google OAuth -->
+    <TestScenario name="Validate Google OAuth">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Google Sign-In Button Visible</TestCaseName>
+        <TestSteps>
+          <Step>1. Open the login or register page.</Step>
+          <Step>2. Observe the Google Sign-In button.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>Google Sign-In button is visible on both login and register pages.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Successful Google OAuth Login</TestCaseName>
+        <TestSteps>
+          <Step>1. Click the Google Sign-In button.</Step>
+          <Step>2. Select a valid Google account from the popup.</Step>
+          <Step>3. Grant permissions.</Step>
+        </TestSteps>
+        <TestData>Valid Google Account</TestData>
+        <ExpectedResult>User is authenticated and redirected to the appropriate dashboard. JWT token stored in localStorage.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+  </Module>
+
+  <!-- ============================================================ -->
+  <!-- MODULE 2: VEHICLES                                           -->
+  <!-- ============================================================ -->
+  <Module name="Vehicles">
+
+    <!-- SCENARIO: Validate Vehicle List -->
+    <TestScenario name="Validate Vehicle List">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Vehicle List Loads for Manager</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as a manager.</Step>
+          <Step>2. Navigate to the Fleet Management page.</Step>
+        </TestSteps>
+        <TestData>Manager credentials</TestData>
+        <ExpectedResult>All registered vehicles are listed with number plate, make, model, status, and health score.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Vehicle Filter by Status — Available</TestCaseName>
+        <TestSteps>
+          <Step>1. On the Fleet Management page, select 'Available' from the status filter.</Step>
+        </TestSteps>
+        <TestData>status=available</TestData>
+        <ExpectedResult>Only vehicles with status 'available' are shown in the list.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Vehicle Filter by Status — In Use</TestCaseName>
+        <TestSteps>
+          <Step>1. Select 'In Use' from the status filter.</Step>
+        </TestSteps>
+        <TestData>status=in-use</TestData>
+        <ExpectedResult>Only vehicles with status 'in-use' are shown.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Vehicle Filter by Status — Maintenance</TestCaseName>
+        <TestSteps>
+          <Step>1. Select 'Maintenance' from the status filter.</Step>
+        </TestSteps>
+        <TestData>status=maintenance</TestData>
+        <ExpectedResult>Only vehicles with status 'maintenance' are shown.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify Driver Cannot Access Fleet Management</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as a driver.</Step>
+          <Step>2. Attempt to navigate to the Fleet Management URL directly.</Step>
+        </TestSteps>
+        <TestData>Driver credentials, Manager route URL</TestData>
+        <ExpectedResult>Access is denied. System returns HTTP 403 or redirects to the driver dashboard.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Add Vehicle -->
+    <TestScenario name="Validate Add Vehicle">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Add Vehicle Form Opens</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as manager.</Step>
+          <Step>2. Click the 'Add Vehicle' button on the Fleet Management page.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>Add Vehicle form is displayed with fields: Number Plate, Make, Model, Year, Color, Type, Notes, Photo.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Add Vehicle with Valid Data</TestCaseName>
+        <TestSteps>
+          <Step>1. Fill in all required fields with valid data.</Step>
+          <Step>2. Upload a vehicle photo.</Step>
+          <Step>3. Click 'Save'.</Step>
+        </TestSteps>
+        <TestData>Number Plate: CAA-1234, Make: Toyota, Model: KDH, Year: 2022, Type: van</TestData>
+        <ExpectedResult>Vehicle is created. It appears in the Fleet Management list with health score 100 and status 'available'.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Duplicate Number Plate is Rejected</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter a number plate that already exists in the system.</Step>
+          <Step>2. Click 'Save'.</Step>
+        </TestSteps>
+        <TestData>Existing Number Plate</TestData>
+        <ExpectedResult>System returns HTTP 409. Error message: 'A vehicle with this number plate already exists.'</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Add Vehicle with Missing Required Fields</TestCaseName>
+        <TestSteps>
+          <Step>1. Leave the Number Plate field empty.</Step>
+          <Step>2. Click 'Save'.</Step>
+        </TestSteps>
+        <TestData>-</TestData>
+        <ExpectedResult>Validation error shown. Form does not submit.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Edit Vehicle -->
+    <TestScenario name="Validate Edit Vehicle">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Vehicle Details Can Be Updated</TestCaseName>
+        <TestSteps>
+          <Step>1. Click on a vehicle in the Fleet Management list.</Step>
+          <Step>2. Click 'Edit'.</Step>
+          <Step>3. Change the model name.</Step>
+          <Step>4. Click 'Save'.</Step>
+        </TestSteps>
+        <TestData>Updated model name</TestData>
+        <ExpectedResult>Vehicle record is updated. Changes are reflected in the vehicle detail view.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Vehicle Status Can Be Changed to Maintenance</TestCaseName>
+        <TestSteps>
+          <Step>1. Open a vehicle that is currently 'available'.</Step>
+          <Step>2. Change the status to 'maintenance'.</Step>
+          <Step>3. Save changes.</Step>
+        </TestSteps>
+        <TestData>status=maintenance</TestData>
+        <ExpectedResult>Vehicle status updated to 'maintenance'. Vehicle no longer appears in smart assignment results.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+  </Module>
+
+  <!-- ============================================================ -->
+  <!-- MODULE 3: INSPECTIONS                                        -->
+  <!-- ============================================================ -->
+  <Module name="Inspections">
+
+    <!-- SCENARIO: Validate Create Inspection -->
+    <TestScenario name="Validate Create Inspection">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Driver Can Start a New Inspection</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as a driver.</Step>
+          <Step>2. Click 'New Inspection' on the dashboard.</Step>
+          <Step>3. Select an available vehicle.</Step>
+        </TestSteps>
+        <TestData>Driver credentials, Available vehicle</TestData>
+        <ExpectedResult>Inspection record is created with status 'in_progress'. Driver proceeds to customer details step.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Customer Details Are Saved</TestCaseName>
+        <TestSteps>
+          <Step>1. On the Customer Details step, enter customer name, NIC, phone, rental start, and rental end.</Step>
+          <Step>2. Click 'Continue'.</Step>
+        </TestSteps>
+        <TestData>Customer Name: Amal Fernando, NIC: 199012345678, Phone: +94771234567, Rental: 2026-03-20 to 2026-03-25</TestData>
+        <ExpectedResult>Customer details are saved. Driver proceeds to the photo capture step.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify All 8 Photos Can Be Captured</TestCaseName>
+        <TestSteps>
+          <Step>1. On the Photo Capture step, capture photos for all 8 angles: front, rear, left, right, interior, dashboard, damage, odometer.</Step>
+          <Step>2. Click 'Continue'.</Step>
+        </TestSteps>
+        <TestData>8 JPEG photos (one per angle)</TestData>
+        <ExpectedResult>All 8 photos are uploaded and visible in the photo review step.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify AI Damage Detection Runs on Photos</TestCaseName>
+        <TestSteps>
+          <Step>1. After photo review, proceed to the AI Processing step.</Step>
+          <Step>2. Wait for analysis to complete.</Step>
+        </TestSteps>
+        <TestData>8 uploaded inspection photos</TestData>
+        <ExpectedResult>AI analysis completes. Damage detection results are displayed with damage type, severity, and confidence score per photo.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify AI Service Returns STUB_MODE When Model Unavailable</TestCaseName>
+        <TestSteps>
+          <Step>1. Simulate AI service running in STUB_MODE (model weights missing).</Step>
+          <Step>2. Trigger AI analysis from the inspection workflow.</Step>
+        </TestSteps>
+        <TestData>8 photos, AI service in STUB_MODE</TestData>
+        <ExpectedResult>AI service returns HTTP 200 with mock damage detections and stub_mode: true in the response. Workflow continues without error.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-006">
+        <TestCaseName>Verify Digital Signatures Can Be Captured</TestCaseName>
+        <TestSteps>
+          <Step>1. On the Digital Signatures step, draw a signature in the driver signature pad.</Step>
+          <Step>2. Draw a signature in the customer signature pad.</Step>
+          <Step>3. Click 'Continue'.</Step>
+        </TestSteps>
+        <TestData>Canvas signature drawings</TestData>
+        <ExpectedResult>Both signatures are saved as PNG files. Inspection proceeds to report generation.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-007">
+        <TestCaseName>Verify PDF Report Is Generated</TestCaseName>
+        <TestSteps>
+          <Step>1. On the Report Generated step, click 'Download PDF'.</Step>
+        </TestSteps>
+        <TestData>Completed inspection with photos, AI results, and signatures</TestData>
+        <ExpectedResult>PDF downloads successfully. Report contains: customer name, NIC, vehicle details, inspection date, damage summary, and both signatures.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-008">
+        <TestCaseName>Verify Inspection Is Marked Complete</TestCaseName>
+        <TestSteps>
+          <Step>1. Complete all 8 steps of the inspection workflow.</Step>
+          <Step>2. Check the inspection status in the driver's inspection history.</Step>
+        </TestSteps>
+        <TestData>Completed inspection ID</TestData>
+        <ExpectedResult>Inspection status is 'completed'. Record visible in driver inspection history and manager inspection list.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Manager Inspection Review -->
+    <TestScenario name="Validate Manager Inspection Review">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Manager Can View All Inspections</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as manager.</Step>
+          <Step>2. Navigate to the Inspections page.</Step>
+        </TestSteps>
+        <TestData>Manager credentials</TestData>
+        <ExpectedResult>All inspections from all drivers are listed with status, vehicle plate, driver name, and date.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Manager Can Approve an Inspection</TestCaseName>
+        <TestSteps>
+          <Step>1. Open a completed inspection.</Step>
+          <Step>2. Select 'Approved' as the review status.</Step>
+          <Step>3. Add review notes.</Step>
+          <Step>4. Click 'Submit Review'.</Step>
+        </TestSteps>
+        <TestData>Completed inspection, review_status: approved</TestData>
+        <ExpectedResult>Inspection status updates to 'reviewed'. Review record created with status 'approved'. Notification sent to driver.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Manager Can Flag an Inspection</TestCaseName>
+        <TestSteps>
+          <Step>1. Open a completed inspection.</Step>
+          <Step>2. Select 'Flagged' as the review status.</Step>
+          <Step>3. Add notes explaining the issue.</Step>
+          <Step>4. Click 'Submit Review'.</Step>
+        </TestSteps>
+        <TestData>Completed inspection, review_status: flagged, notes: Undisclosed damage found</TestData>
+        <ExpectedResult>Inspection review status is 'flagged'. Notes saved. Driver receives a notification.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Driver Cannot Review Inspections</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as a driver.</Step>
+          <Step>2. Attempt to POST to /api/inspections/:id/review.</Step>
+        </TestSteps>
+        <TestData>Driver credentials, Review endpoint</TestData>
+        <ExpectedResult>System returns HTTP 403 Forbidden. Driver cannot submit reviews.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Inspection History -->
+    <TestScenario name="Validate Inspection History">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Driver Sees Only Their Own Inspections</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as driver1.</Step>
+          <Step>2. Navigate to Inspection History.</Step>
+        </TestSteps>
+        <TestData>Driver1 credentials</TestData>
+        <ExpectedResult>Only inspections conducted by driver1 are shown. Inspections from other drivers are not visible.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Inspection Detail View Shows All Information</TestCaseName>
+        <TestSteps>
+          <Step>1. Click on an inspection in the history list.</Step>
+        </TestSteps>
+        <TestData>Inspection ID</TestData>
+        <ExpectedResult>Inspection detail page shows: vehicle info, customer details, all 8 photos, damage detection results, signatures, and review status.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+  </Module>
+
+  <!-- ============================================================ -->
+  <!-- MODULE 4: NOTIFICATIONS                                      -->
+  <!-- ============================================================ -->
+  <Module name="Notifications">
+
+    <!-- SCENARIO: Validate Notification Centre -->
+    <TestScenario name="Validate Notification Centre">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify Notifications Page Loads</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as manager.</Step>
+          <Step>2. Navigate to the Notifications page.</Step>
+        </TestSteps>
+        <TestData>Manager credentials</TestData>
+        <ExpectedResult>Notifications page loads and displays all notifications for the logged-in user with message, type, and timestamp.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Unread Notification Badge Count</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as a user with unread notifications.</Step>
+          <Step>2. Observe the notification badge in the navigation bar.</Step>
+        </TestSteps>
+        <TestData>User with unread notifications</TestData>
+        <ExpectedResult>Notification badge displays the correct count of unread notifications.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Notification Is Marked as Read</TestCaseName>
+        <TestSteps>
+          <Step>1. Open the Notifications page.</Step>
+          <Step>2. Click on an unread notification or click 'Mark as Read'.</Step>
+        </TestSteps>
+        <TestData>Unread notification ID</TestData>
+        <ExpectedResult>Notification is marked as read. is_read field updates to true. Unread badge count decrements.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify Notification Generated After Inspection Review</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as manager and approve an inspection.</Step>
+          <Step>2. Log in as the driver who conducted the inspection.</Step>
+          <Step>3. Check the Notifications page.</Step>
+        </TestSteps>
+        <TestData>Approved inspection, Driver account</TestData>
+        <ExpectedResult>Driver receives a notification about the inspection review outcome.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify Notification Generated After High Severity Damage Detection</TestCaseName>
+        <TestSteps>
+          <Step>1. Complete an inspection where AI detects high severity damage.</Step>
+          <Step>2. Log in as manager and check the Notifications page.</Step>
+        </TestSteps>
+        <TestData>Inspection with high severity damage detection</TestData>
+        <ExpectedResult>Manager receives a damage alert notification for the high-severity detection.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-006">
+        <TestCaseName>Verify User Sees Only Their Own Notifications</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as driver1.</Step>
+          <Step>2. Navigate to the Notifications page.</Step>
+        </TestSteps>
+        <TestData>Driver1 credentials</TestData>
+        <ExpectedResult>Only notifications belonging to driver1 are returned. Notifications for other users are not visible.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+  </Module>
+
+  <!-- ============================================================ -->
+  <!-- MODULE 5: ERROR HANDLING                                     -->
+  <!-- ============================================================ -->
+  <Module name="Error Handling">
+
+    <!-- SCENARIO: Validate HTTP Error Responses -->
+    <TestScenario name="Validate HTTP Error Responses">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify 401 Returned When No Token Provided</TestCaseName>
+        <TestSteps>
+          <Step>1. Send a GET request to /api/auth/me without any Authorization header.</Step>
+        </TestSteps>
+        <TestData>No Authorization header</TestData>
+        <ExpectedResult>HTTP 401 Unauthorized. Response body: { "error": "No token provided" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify 401 Returned for Expired JWT Token</TestCaseName>
+        <TestSteps>
+          <Step>1. Use a JWT token that has passed its 8-hour expiry.</Step>
+          <Step>2. Send a request to a protected endpoint.</Step>
+        </TestSteps>
+        <TestData>Expired JWT token</TestData>
+        <ExpectedResult>HTTP 401 Unauthorized. Response body: { "error": "Token expired" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify 401 Returned for Malformed JWT Token</TestCaseName>
+        <TestSteps>
+          <Step>1. Send a request with Authorization: Bearer invalidtoken123.</Step>
+        </TestSteps>
+        <TestData>Malformed JWT string</TestData>
+        <ExpectedResult>HTTP 401 Unauthorized. Response body: { "error": "Invalid token" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-004">
+        <TestCaseName>Verify 403 Returned When Driver Accesses Manager Route</TestCaseName>
+        <TestSteps>
+          <Step>1. Log in as a driver.</Step>
+          <Step>2. Send a GET request to /api/manager/dashboard/stats with the driver JWT.</Step>
+        </TestSteps>
+        <TestData>Driver JWT, Manager endpoint</TestData>
+        <ExpectedResult>HTTP 403 Forbidden. Response body: { "error": "Insufficient role" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-005">
+        <TestCaseName>Verify 404 Returned for Non-Existent Inspection</TestCaseName>
+        <TestSteps>
+          <Step>1. Send a GET request to /api/inspections/non-existent-uuid.</Step>
+        </TestSteps>
+        <TestData>Invalid inspection UUID</TestData>
+        <ExpectedResult>HTTP 404 Not Found. Response body: { "error": "Inspection not found" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-006">
+        <TestCaseName>Verify 404 Returned for Non-Existent Vehicle</TestCaseName>
+        <TestSteps>
+          <Step>1. Send a GET request to /api/vehicles/non-existent-uuid.</Step>
+        </TestSteps>
+        <TestData>Invalid vehicle UUID</TestData>
+        <ExpectedResult>HTTP 404 Not Found. Response body: { "error": "Vehicle not found" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-007">
+        <TestCaseName>Verify 409 Returned for Duplicate Email Registration</TestCaseName>
+        <TestSteps>
+          <Step>1. Register a user with email test@example.com.</Step>
+          <Step>2. Attempt to register again with the same email.</Step>
+        </TestSteps>
+        <TestData>Duplicate email: test@example.com</TestData>
+        <ExpectedResult>HTTP 409 Conflict. Response body: { "error": "Email address already registered" }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-008">
+        <TestCaseName>Verify 400 Returned When Non-Image File Uploaded as Photo</TestCaseName>
+        <TestSteps>
+          <Step>1. Start an inspection.</Step>
+          <Step>2. Attempt to upload a PDF file as a vehicle inspection photo via POST /api/photos/upload/:id.</Step>
+        </TestSteps>
+        <TestData>document.pdf renamed to photo.jpg</TestData>
+        <ExpectedResult>HTTP 400 Bad Request. Response body: { "error": "Invalid file type. Only JPEG and PNG accepted." }</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-009">
+        <TestCaseName>Verify 413 Returned When File Upload Exceeds Size Limit</TestCaseName>
+        <TestSteps>
+          <Step>1. Attempt to upload a photo larger than 10 MB to the photo upload endpoint.</Step>
+        </TestSteps>
+        <TestData>Image file > 10 MB</TestData>
+        <ExpectedResult>HTTP 413 Payload Too Large. Error message returned. File is not saved to disk.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+      <TestCase id="TC-010">
+        <TestCaseName>Verify 503 Returned When AI Service Is Unreachable</TestCaseName>
+        <TestSteps>
+          <Step>1. Stop the AI service (port 5001).</Step>
+          <Step>2. Trigger AI analysis via POST /api/inspections/:id/analyze.</Step>
+        </TestSteps>
+        <TestData>Stopped AI service, Valid inspection ID</TestData>
+        <ExpectedResult>HTTP 503 Service Unavailable. Response body: { "error": "AI service unavailable" }. Application does not crash.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+    <!-- SCENARIO: Validate Input Validation -->
+    <TestScenario name="Validate Input Validation">
+
+      <TestCase id="TC-001">
+        <TestCaseName>Verify SQL Injection is Prevented in Login Email Field</TestCaseName>
+        <TestSteps>
+          <Step>1. Enter a SQL injection string in the email field: ' OR 1=1 --</Step>
+          <Step>2. Enter any password.</Step>
+          <Step>3. Click 'Login'.</Step>
+        </TestSteps>
+        <TestData>Email: ' OR 1=1 --, Password: anything</TestData>
+        <ExpectedResult>Login fails with HTTP 401. Database query is parameterised; no SQL injection executed.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-002">
+        <TestCaseName>Verify Password Minimum Requirements Are Enforced</TestCaseName>
+        <TestSteps>
+          <Step>1. On the register page, enter a password of only 4 characters with no uppercase or symbols.</Step>
+          <Step>2. Click 'Continue'.</Step>
+        </TestSteps>
+        <TestData>Password: pass</TestData>
+        <ExpectedResult>Validation error displayed. Registration does not proceed. Password must be at least 8 characters.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>High</Priority>
+      </TestCase>
+
+      <TestCase id="TC-003">
+        <TestCaseName>Verify Invalid Date Range in Inspection Customer Details</TestCaseName>
+        <TestSteps>
+          <Step>1. On the Customer Details step, enter a rental_end date that is earlier than rental_start.</Step>
+          <Step>2. Click 'Continue'.</Step>
+        </TestSteps>
+        <TestData>rental_start: 2026-03-25, rental_end: 2026-03-20</TestData>
+        <ExpectedResult>Validation error displayed. Inspection does not proceed past the customer details step.</ExpectedResult>
+        <ActualResult></ActualResult>
+        <Status></Status>
+        <Priority>Medium</Priority>
+      </TestCase>
+
+    </TestScenario>
+
+  </Module>
+
+</TestSuite>

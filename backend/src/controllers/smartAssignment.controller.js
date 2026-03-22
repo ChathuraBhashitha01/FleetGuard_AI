@@ -98,6 +98,8 @@ exports.getRecommendations = async (req, res) => {
         status: v.status,
         distance_km: parseFloat(distance.toFixed(2)),
         total_score: parseFloat(score.toFixed(1)),
+        last_latitude: v.last_latitude,
+        last_longitude: v.last_longitude,
         score_breakdown: {
           health_points: parseFloat(healthPoints.toFixed(1)),
           distance_points: parseFloat(distancePoints.toFixed(1)),
