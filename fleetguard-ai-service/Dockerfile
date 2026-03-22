@@ -21,8 +21,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy everything else
 COPY . .
 
-# Expose the API port
-EXPOSE 5001
-
 # Command to run the application
 CMD ["python", "app.py"]
