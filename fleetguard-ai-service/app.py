@@ -134,5 +134,5 @@ def detect_damage():
 if __name__ == '__main__':
     # Backend proxy expects 5000, but if AirPlay blocks it on macOS, we can use 5001.
     # We use AI_PORT to prevent conflicting with the Node backend which globally uses PORT=3001.
-    port = int(os.environ.get("AI_PORT", 5001))
+    port = int(os.environ.get("PORT", os.environ.get("AI_PORT", 5001)))
     app.run(host='0.0.0.0', port=port)
