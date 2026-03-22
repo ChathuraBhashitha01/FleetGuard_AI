@@ -18,8 +18,11 @@ CORS(app)
 
 # Dynamically link to the newly training YOLOv8 model weights
 # (It will load the pre-trained nano until the best.pt file finishes writing in ~3 hours)
-TRAINED_WEIGHTS = "../runs/classify/fleetguard_damage_model4/weights/best.pt"
-MODEL_PATH = TRAINED_WEIGHTS if os.path.exists(TRAINED_WEIGHTS) else "../runs/classify/fleetguard_damage_model3/weights/best.pt"
+TRAINED_WEIGHTS = "best_damage.pt"
+MODEL_PATH = TRAINED_WEIGHTS if os.path.exists(TRAINED_WEIGHTS) else "yolov8n-cls.pt"
+
+if not os.path.exists(MODEL_PATH):
+    MODEL_PATH = "yolov8n.pt"
 
 print(f"Loading Genuine PyTorch ultralytics backend via: {MODEL_PATH}")
 
@@ -134,5 +137,5 @@ def detect_damage():
 if __name__ == '__main__':
     # Backend proxy expects 5000, but if AirPlay blocks it on macOS, we can use 5001.
     # We use AI_PORT to prevent conflicting with the Node backend which globally uses PORT=3001.
-    port = int(os.environ.get("AI_PORT", 5001))
+    port = int(os.environ.get("PORT", os.environ.get("AI_PORT", 5001)))
     app.run(host='0.0.0.0', port=port)

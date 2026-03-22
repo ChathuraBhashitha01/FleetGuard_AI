@@ -263,16 +263,3 @@ FleetGuard_AI/
 | Iruwan Tharaka | Testing & QA | — |
 
 ---
-
-## Documentation
-
-| Document | Description |
-| --- | --- |
-| [Project Charter](docs/PROJECT_CHARTER.md) | Vision, scope, milestones, success criteria |
-| [Technical Architecture](docs/TECHNICAL_ARCHITECTURE.md) | System design, data flow, security model |
-| [API Reference](docs/API_REFERENCE.md) | All endpoints with request/response examples |
-| [Database Schema](docs/DATABASE_SCHEMA.md) | ERD, table definitions, indexes, migration history |
-| [Development Guide](docs/DEVELOPMENT_GUIDE.md) | Onboarding, coding standards, git workflow |
-| [Sprint History](docs/SPRINT_HISTORY.md) | Delivery history across all sprints |
-| [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) | Production setup and environment configuration |
-| [Database Connection](docs/DATABASE_CONNECTION.md) | Local DB setup and troubleshooting |

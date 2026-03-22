@@ -47,7 +47,8 @@ export const inspectionService = {
 
   getPdfUrl: (inspectionId) => {
     const base = (import.meta.env.VITE_API_URL || 'http://localhost:3001/api').replace(/\/$/, '');
-    return `${base}/inspections/${inspectionId}/pdf`;
+    const token = localStorage.getItem('fg_token');
+    return `${base}/inspections/${inspectionId}/pdf?token=${encodeURIComponent(token || '')}`;
   },
 
   reviewInspection: (inspectionId, reviewStatus, notes = '') =>

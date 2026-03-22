@@ -94,7 +94,7 @@ async function loadDataAndTrain() {
         if (!fs.existsSync(classDir)) continue;
 
         const files = fs.readdirSync(classDir).filter(f => f.match(/\.(jpg|jpeg)$/i));
-        const sampleSize = Math.min(files.length, 30); // Use 30 images for quick pure-JS training on Node
+        const sampleSize = Math.min(files.length, 10); // Use 10 images for fast CNN training on Node
         for (let i = 0; i < sampleSize; i++) {
             try {
                 const normalized = decodeImage(path.join(classDir, files[i]));
@@ -120,8 +120,8 @@ async function loadDataAndTrain() {
     newModel.add(tf.layers.dense({ units: 2, activation: 'softmax' })); 
     newModel.compile({ optimizer: 'adam', loss: 'categoricalCrossentropy', metrics: ['accuracy'] });
 
-    console.log("Training model in memory...");
-    await newModel.fit(xTrain, yTrainOneHot, { epochs: 1, batchSize: 16, shuffle: true });
+    console.log("Training Dense Model in memory (20 epochs)...");
+    await newModel.fit(xTrain, yTrainOneHot, { epochs: 20, batchSize: 16, shuffle: true });
     model = newModel;
 
     try {

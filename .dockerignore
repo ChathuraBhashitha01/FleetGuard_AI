@@ -1,0 +1,14 @@
+# Ignore intermediate heavy dependencies for Docker builds
+.git
+node_modules/
+**/node_modules/
+frontend/
+backend/
+fleetguard-ai-service/venv/
+fleetguard-ai-service/venv2/
+fleetguard-ai-service/dataset/
+fleetguard-ai-service/dataset.zip
+fleetguard-ai-service/yolov4-tiny.weights
+fleetguard-ai-service/yolov4-tiny.cfg
+fleetguard-ai-service/test_model/
+runs/

@@ -303,7 +303,7 @@ export function DriverSignup() {
                 </div>
 
                 {/* Google Sign Up */}
-                <div className="w-full flex justify-center [&>div]:w-full">
+                <div className="w-full flex justify-center  ">
                   <GoogleLogin
                     onSuccess={async (credentialResponse) => {
                       if (credentialResponse.credential) {
@@ -321,9 +321,9 @@ export function DriverSignup() {
                       }
                     }}
                     onError={() => setError('Google Authentication Failed')}
-                    width="100%"
-                    theme="filled_black"
-                    shape="circle"
+                    
+                    theme="outline"
+                    shape="pill"
                   />
                 </div>
 
