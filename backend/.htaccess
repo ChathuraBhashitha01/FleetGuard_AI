@@ -1,0 +1,2 @@
+# Increase Request Body size limit to 50MB for batch photo uploads
+LimitRequestBody 52428800
