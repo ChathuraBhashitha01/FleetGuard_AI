@@ -18,12 +18,11 @@ CORS(app)
 
 # Dynamically link to the newly training YOLOv8 model weights
 # (It will load the pre-trained nano until the best.pt file finishes writing in ~3 hours)
-TRAINED_WEIGHTS = "../runs/classify/fleetguard_damage_model4/weights/best.pt"
-MODEL_PATH = TRAINED_WEIGHTS if os.path.exists(TRAINED_WEIGHTS) else "../runs/classify/fleetguard_damage_model3/weights/best.pt"
+TRAINED_WEIGHTS = "best_damage.pt"
+MODEL_PATH = TRAINED_WEIGHTS if os.path.exists(TRAINED_WEIGHTS) else "yolov8n-cls.pt"
 
 if not os.path.exists(MODEL_PATH):
-    # Railway Fallback: use model sitting inside the AI folder
-    MODEL_PATH = "yolov8n-cls.pt" if os.path.exists("yolov8n-cls.pt") else "yolov8n.pt"
+    MODEL_PATH = "yolov8n.pt"
 
 print(f"Loading Genuine PyTorch ultralytics backend via: {MODEL_PATH}")
 
